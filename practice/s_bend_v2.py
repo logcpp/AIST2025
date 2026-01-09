@@ -9,7 +9,7 @@ lib = gdstk.Library()
 top_cell = lib.new_cell("top_cell")
 
 # constants
-wg_width = 0.5   # waveguide width (um)
+wg_width = 0.44   # waveguide width (um)
 radius = 10      # waveguide bending radius (um)
 dr = 0.1         # straight part length
 length = 100.0   # S-shape length (um)
