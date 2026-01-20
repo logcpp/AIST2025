@@ -14,9 +14,15 @@ last change: 2026/01/18
 
 ## Test patterns
 - 50 Ohm load
-- metal strip wires with different widths
+- metal coplanar waveguides
+	- Short
+	- Load
+	- Open
+	- Through
+	- L & 2L of through coplanar waveguides
 - PIN doped Si with different lengths
 - TiN MZM test patterns (w/ and w/o trench)
+- GC to GC B2B test port
 
 ## Experiments to do
 - GC 1x4 in -> GC 4x4 out (MVM)
