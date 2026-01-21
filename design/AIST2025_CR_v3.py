@@ -5,8 +5,11 @@
 import gdstk
 import numpy as np
 import lib_v3 as lib
+import lib_v3_RF as lib_RF
 
 top_cell = gdstk.Cell("top_cell")
+
+AIST_MPW_Cell = gdstk.read_rawcells("../MPW_Cell/MPW_Cell_5x10.gds")
 
 #---------- total chip area ----------#
 CHIP_WIDTH = 5000
@@ -23,13 +26,14 @@ top_cell.add(
 	chip_area_SUGANUMA_LEFT,
 	chip_area_SUGANUMA_RIGHT,
 )
+# top_cell.add(gdstk.Reference(AIST_MPW_Cell["MPW_cell"], origin=(2500,5000)))
 
 #---------- GC test patterns ----------#
 GC_pitch = 120 # <-- based on simulation
 GC_io_distance = 500 # distance between array **centers**
 GC_input_origin = [
 	550,
-	CHIP_HEIGHT - 1100,
+	CHIP_HEIGHT - 1000,
 ]
 GC_output_origin = [
 	GC_input_origin[0],
@@ -209,6 +213,33 @@ right_ends_L200 = [
 ]
 GC1x4input_route = lib.GC1x4input_route_cell(GC_input_origin, GC_pitch, lib.LAYER_SiWG, "GC1x4input_route", PINL500_01_origin, PINL200_01_origin, PINL200_02_origin, PINL500_02_origin, pin_mzm_L500_end_o, pin_mzm_L200_end_o)
 top_cell.add(gdstk.Reference(GC1x4input_route, origin=(0,0)))
+
+
+#---------- RF calibration pattern ----------#
+
+CPW2L_01 = lib_RF.new_CPW_cell(2000, "CPW_L3.0mm")
+CPW1L_01 = lib_RF.new_CPW_cell(1000, "CPW_L1.5mm")
+Short_01 = lib_RF.new_Short_cell(100, "SHORT_L100um")
+Open_01 = lib_RF.new_Open_cell(100, "OPEN_L100um")
+Load_01 = lib_RF.new_Load_cell(100, "LOAD_L100um")
+Through_01 = lib_RF.new_CPW_cell(100, "THROUGH_L100um")
+
+CPW_o = [400, 3500+1500]
+
+CPW2L_01_origin   = [CPW_o[0]+  0, CPW_o[1]+   0]
+CPW1L_01_origin   = [CPW_o[0]+400, CPW_o[1]+   0]
+Short_01_origin   = [CPW_o[0]+400, CPW_o[1]+3000]
+Open_01_origin    = [CPW_o[0]+400, CPW_o[1]+2500]
+Load_01_origin    = [CPW_o[0]+400, CPW_o[1]+2000]
+Through_01_origin = [CPW_o[0]+400, CPW_o[1]+1500]
+
+top_cell.add(gdstk.Reference(CPW2L_01, origin=CPW2L_01_origin))
+top_cell.add(gdstk.Reference(CPW1L_01, origin=CPW1L_01_origin))
+top_cell.add(gdstk.Reference(Short_01, origin=Short_01_origin))
+top_cell.add(gdstk.Reference(Open_01, origin=Open_01_origin))
+top_cell.add(gdstk.Reference(Load_01, origin=Load_01_origin))
+top_cell.add(gdstk.Reference(Through_01, origin=Through_01_origin))
+
 
 lib.LIB.add(top_cell, *top_cell.dependencies(True))
 lib.LIB.write_gds("AIST2025_CR_v3.gds")
