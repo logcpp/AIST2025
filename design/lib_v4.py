@@ -23,6 +23,7 @@ LAYER_PW     = 41 # probe window
 LAYER_DW     = 42 # deep window (trench)
 
 LAYER_SSC    = 53 # ssc box
+LAYER_NODMY  = 60 # no dummy area
 
 # constants
 wg_width = 0.44        # waveguide width (um)
@@ -391,10 +392,10 @@ def new_RF_PAD_cell():
 	return ret_cell, ret_points
 RF_PAD_cell, RF_PAD_cell_points = new_RF_PAD_cell()
 
-# => 30.375 Ω based on sheet resistance = 27 Ω/sq
-def new_TIN_SERIES_TERM_cell(TIN_width=80, TIN_length=90):
+# => 40.5 Ω based on sheet resistance = 27 Ω/sq
+def new_TIN_SERIES_TERM_cell(TIN_width=60, TIN_length=90):
 	# top pads
-	ret_cell = gdstk.Cell("TIN_SERIES_TERM_30Ohm")
+	ret_cell = gdstk.Cell("TIN_SERIES_TERM_40Ohm")
 	pad_origin = (0, 0)
 	# GSGSG pad
 	for i in range(5):
@@ -430,22 +431,22 @@ def new_TIN_SERIES_TERM_cell(TIN_width=80, TIN_length=90):
 	contact_length = 10
 	# left
 	contact_bot_left_botleft = [
-		pad_origin[0] - 1*RF_PAD_PITCH - contact_width/2 + 3,
+		pad_origin[0] - 1*RF_PAD_PITCH - contact_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length
 	]
 	contact_bot_left_topright = [
-		pad_origin[0] - 1*RF_PAD_PITCH + contact_width/2 - 3,
+		pad_origin[0] - 1*RF_PAD_PITCH + contact_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3
 	]
 	contact_bot_left = gdstk.rectangle(contact_bot_left_botleft, contact_bot_left_topright, layer=layer, datatype=0)
 	ret_cell.add(contact_bot_left)
 	# right
 	contact_bot_right_botleft = [
-		pad_origin[0] + 1*RF_PAD_PITCH - contact_width/2 + 3,
+		pad_origin[0] + 1*RF_PAD_PITCH - contact_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length
 	]
 	contact_bot_right_topright = [
-		pad_origin[0] + 1*RF_PAD_PITCH + contact_width/2 - 3,
+		pad_origin[0] + 1*RF_PAD_PITCH + contact_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3
 	]
 	contact_bot_right = gdstk.rectangle(contact_bot_right_botleft, contact_bot_right_topright, layer=layer, datatype=0)
@@ -454,22 +455,22 @@ def new_TIN_SERIES_TERM_cell(TIN_width=80, TIN_length=90):
 	layer = LAYER_TIN
 	# left
 	TIN_left_botleft = [
-		pad_origin[0] - 1*RF_PAD_PITCH - TIN_width/2 + 3,
+		pad_origin[0] - 1*RF_PAD_PITCH - TIN_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3
 	]
 	TIN_left_topright = [
-		pad_origin[0] - 1*RF_PAD_PITCH + TIN_width/2 - 3,
+		pad_origin[0] - 1*RF_PAD_PITCH + TIN_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3 + TIN_length
 	]
 	TIN_left = gdstk.rectangle(TIN_left_botleft, TIN_left_topright, layer=layer, datatype=0)
 	ret_cell.add(TIN_left)
 	# right
 	TIN_right_botleft = [
-		pad_origin[0] + 1*RF_PAD_PITCH - TIN_width/2 + 3,
+		pad_origin[0] + 1*RF_PAD_PITCH - TIN_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3
 	]
 	TIN_right_topright = [
-		pad_origin[0] + 1*RF_PAD_PITCH + TIN_width/2 - 3,
+		pad_origin[0] + 1*RF_PAD_PITCH + TIN_width/2,
 		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3 + TIN_length
 	]
 	TIN_right = gdstk.rectangle(TIN_right_botleft, TIN_right_topright, layer=layer, datatype=0)
@@ -520,7 +521,7 @@ def new_TIN_SERIES_TERM_cell(TIN_width=80, TIN_length=90):
 		pad_metal = gdstk.rectangle(MET_MIDDLE_corner_botleft, MET_MIDDLE_corner_topright, layer=layer, datatype=0)
 		ret_cell.add(pad_metal)
 	return ret_cell
-TIN_SERIES_TERM_30Ohm = new_TIN_SERIES_TERM_cell()
+TIN_SERIES_TERM_40Ohm = new_TIN_SERIES_TERM_cell()
 
 
 def new_PIN_AMZM_cell(PIN_length, cell_name):
@@ -560,7 +561,7 @@ def new_PIN_AMZM_cell(PIN_length, cell_name):
 	v = np.abs(MMI2x2_BOTLEFT_CENTER[0] - MMI2x2_BOTRIGHT_CENTER[0])
 	o = vertical(o, v, layer, ret_cell)
 	TAPER_BOT_RIGHT = o.copy() # savepoint for taper (bottom right)
-	ret_cell.add(gdstk.Reference(PIN_cell, origin=o))
+	ret_cell.add(gdstk.Reference(PIN_cell, origin=o, rotation=np.pi, x_reflection=True))
 	o[0] += PIN_end_o[0]
 	o[1] += PIN_end_o[1]
 	TAPER_TOP_RIGHT = o.copy() # savepoint for taper (top right)
@@ -667,7 +668,7 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name):
 	v = np.abs(MMI2x2_BOTLEFT_CENTER[0] - MMI2x2_BOTRIGHT_CENTER[0])
 	o = vertical(o, v, layer, ret_cell)
 	TAPER_BOT_RIGHT = o.copy() # savepoint for taper (bottom right)
-	ret_cell.add(gdstk.Reference(PIN_cell, origin=o))
+	ret_cell.add(gdstk.Reference(PIN_cell, origin=o, rotation=np.pi, x_reflection=True))
 	o[0] += PIN_end_o[0]
 	o[1] += PIN_end_o[1]
 	TAPER_TOP_RIGHT = o.copy() # savepoint for taper (top right)
@@ -719,7 +720,7 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name):
 		PAD_origin[0],
 		PAD_origin[1] - RF_PAD_size - TIN_length + TIN_contact_length
 	]
-	ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_30Ohm, origin=TIN_TERM_origin))
+	ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_40Ohm, origin=TIN_TERM_origin))
 	return ret_cell, ret_o
 
 def PIN_structure(PIN_length, start_point, cell_name):
@@ -994,20 +995,6 @@ def TIN_structure(TIN_length, TIN_width, start_point, cell_name):
 	ret_cell.add(pad_metal_topright)
 	return ret_cell, ret_o
 
-# top_cell = gdstk.Cell("top_cell")
-
-# pin_mzm_L100 = new_PIN_MZM_cell(100, "CR_PINL100MZ")
-
-# PINL100_01_origin = [750, 1000]
-# PINL100_02_origin = [250, 1000]
-# PINL250_01_origin = [750,   50]
-# PINL500_01_origin = [250,   50]
-
-# top_cell.add(gdstk.Reference(pin_mzm_L100, origin=PINL100_01_origin))
-
-# LIB.add(top_cell, *top_cell.dependencies(True))
-# LIB.write_gds("pin_mzm_custom.gds")
-
 #-------------------- Routing functions --------------------#
 
 # port position of 2x2 MMI of AMZM
@@ -1015,15 +1002,49 @@ MMI2x2_BOTLEFT_CENTER  = [-0.55, 0.0]
 MMI2x2_BOTRIGHT_CENTER = [+0.55, 0.0]
 
 routing_wg_pitch = 5
-MZM_routing_height_max = 3500 + 850
+MZM_routing_height_max = 3500 + 875
 MZM_routing_width_max = 1066
 MZM_routing_MZM_height_max = 120
 
-GC_routing_width_min = 160 + 40 + (radius+dr)
+GC_routing_width_min = 160 + 50 + (radius+dr)
 GC_routing_width_max = 900 + (radius+dr)
-GC_routing_height_ssc_min = 3500 + ssc_length + dicing_length + routing_wg_pitch
-GC_routing_height_GC_min = 10000 - 1400
+GC_routing_height_ssc_min = 3500 + ssc_length + dicing_length + routing_wg_pitch + 1
+GC_routing_height_GC_min = 10000 - 1325
 GC_routing_height_GC_max = 3500 + 1500
+
+def S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset, dh=0, skip=0):
+	h = dh
+	if wg_offset > 2 and skip < 1:
+		h += ssc_pitch * 4 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	if wg_offset > 6 and skip < 2:
+		h = ssc_pitch * 4 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	if wg_offset > 10 and skip < 3:
+		h = ssc_pitch * 4 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	if wg_offset > 14 and skip < 4:
+		h = ssc_pitch * 4 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	if wg_offset > 18 and skip < 5:
+		h = ssc_pitch * 4 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	if wg_offset > 22 and skip < 6:
+		h = ssc_pitch * 6 - 2*(2*radius+dr)
+		o = horizontal(o, h, layer, ret_cell)
+		o = arc_RD(o, layer, ret_cell)
+		o = arc_DR(o, layer, ret_cell)
+	return o
 
 # bot left
 def PINL500_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end):
@@ -1039,6 +1060,10 @@ def PINL500_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	dh = 90 - 4.45 + GC_routing_width_min - origin[0] + wg_offset*routing_wg_pitch
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+20, dh=dh)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1053,6 +1078,11 @@ def PINL500_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	dh = 90 - 4.45 + GC_routing_width_min - origin[0] - 2*(radius+dr) + wg_offset*routing_wg_pitch
+	dh -= np.abs(MMI2x2_BOTRIGHT_CENTER[0] - MMI2x2_BOTLEFT_CENTER[0])
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+20, dh=dh)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1077,6 +1107,11 @@ def PINL500_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	dh = 90 - 4.45 + GC_routing_width_min - origin[0] - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
+	dh -= np.abs(MMI2x2_BOTRIGHT_CENTER[0] - MMI2x2_BOTLEFT_CENTER[0])
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+20, dh=dh)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1095,9 +1130,17 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	]
 	o = arc_DL(o, layer, ret_cell)
 	o = arc_LD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 13.2
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1109,9 +1152,17 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 		origin[0] + MMI2x2_BOTRIGHT_CENTER[0],
 		origin[1],
 	]
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 13.2 - 16.1 - 2*(radius+dr) + wg_offset*routing_wg_pitch
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1131,9 +1182,17 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	h = end_o[1] - 4*(radius+dr) + routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 13.2 - 16.1 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1142,61 +1201,77 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	return ret_cell
 
 # top left
-def PINL500_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
+def PINL100TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	ret_cell = gdstk.Cell(cell_name)
-	# bot left port
+	# top right port
 	wg_offset = 6
 	o = [
-		origin[0] + MMI2x2_BOTLEFT_CENTER[0],
-		origin[1],
+		origin[0] + end_o[1] - MMI2x2_BOTRIGHT_CENTER[0],
+		origin[1] - end_o[0],
 	]
 	o = arc_DL(o, layer, ret_cell)
 	o = arc_LD(o, layer, ret_cell)
 	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	h = MZM_routing_width_max - o[0] + (-8+wg_offset)*routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 35.4
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = ssc_point[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
-	# bot right port
+	# top left port
 	wg_offset += 1
 	o = [
-		origin[0] + MMI2x2_BOTRIGHT_CENTER[0],
-		origin[1],
+		origin[0] + end_o[1] + MMI2x2_BOTRIGHT_CENTER[0],
+		origin[1] - end_o[0],
 	]
 	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	h = MZM_routing_width_max - o[0] + (-8+wg_offset)*routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 35.4 - 14.8 - 2*(radius+dr) + wg_offset*routing_wg_pitch
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = ssc_point[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
-	# top right port
+	# bot left port
 	wg_offset += 1
 	o = [
-		origin[0] - end_o[1] + MMI2x2_BOTRIGHT_CENTER[0],
-		origin[1] + end_o[0],
+		origin[0] - MMI2x2_BOTLEFT_CENTER[0],
+		origin[1],
 	]
 	o = arc_UR(o, layer, ret_cell)
 	h_1 = 15 # arbitrary value
 	o = horizontal(o, h_1, layer, ret_cell)
 	o = arc_RU(o, layer, ret_cell)
-	v = 80 # arbitrary value
+	v = 40 # arbitrary value
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_UR(o, layer, ret_cell)
 	h = end_o[1] - 4*(radius+dr) + routing_wg_pitch - h_1
@@ -1205,12 +1280,20 @@ def PINL500_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	h = MZM_routing_width_max - o[0] + (-8+wg_offset)*routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	### bend at SSC for better space efficiency
+	h = 240 - 35.4 - 14.8 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1219,73 +1302,97 @@ def PINL500_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	return ret_cell
 
 # top right
-def PINL200_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
+def PINL200TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	ret_cell = gdstk.Cell(cell_name)
-	# bot left port
+	# top right port
 	wg_offset = 9
 	o = [
-		origin[0] + MMI2x2_BOTLEFT_CENTER[0],
-		origin[1],
+		origin[0] + end_o[1] - MMI2x2_BOTRIGHT_CENTER[0],
+		origin[1] - end_o[0],
 	]
 	o = arc_DL(o, layer, ret_cell)
 	o = arc_LD(o, layer, ret_cell)
-	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	v = MZM_routing_height_max - o[1] + (11-wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_DL(o, layer, ret_cell)
+	h = MZM_routing_width_max - o[0] + (-4+wg_offset)*routing_wg_pitch + 2*dr
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LD(o, layer, ret_cell)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	### bend at SSC for better space efficiency
+	h = 220 - 15.4
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
-	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = ssc_point[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
-	# bot right port
+	# top left port
 	wg_offset += 1
 	o = [
-		origin[0] + MMI2x2_BOTRIGHT_CENTER[0],
-		origin[1],
+		origin[0] + end_o[1] + MMI2x2_BOTRIGHT_CENTER[0],
+		origin[1] - end_o[0],
 	]
-	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	v = MZM_routing_height_max - o[1] + (11-wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_DL(o, layer, ret_cell)
+	h = MZM_routing_width_max - o[0] + (-4+wg_offset)*routing_wg_pitch + 2*dr
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LD(o, layer, ret_cell)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	### bend at SSC for better space efficiency
+	h = 220 - 15.4 - 29.8 - 2*(radius+dr) + wg_offset*routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
-	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = ssc_point[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
-	# top right port
+	# bot left port
 	wg_offset += 1
 	o = [
-		origin[0] - end_o[1] + MMI2x2_BOTRIGHT_CENTER[0],
-		origin[1] + end_o[0],
+		origin[0] - MMI2x2_BOTLEFT_CENTER[0],
+		origin[1],
 	]
 	o = arc_UR(o, layer, ret_cell)
 	o = arc_RU(o, layer, ret_cell)
-	v = 80 # arbitrary value
+	v = 40 # arbitrary value
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_UR(o, layer, ret_cell)
 	h = end_o[1] - 4*(radius+dr) + routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	v = MZM_routing_height_max - o[1] + (11-wg_offset)*routing_wg_pitch + 1*(radius+dr)
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_DL(o, layer, ret_cell)
+	h = MZM_routing_width_max - o[0] + (-4+wg_offset)*routing_wg_pitch + 2*dr
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LD(o, layer, ret_cell)
+	v = GC_routing_height_ssc_min - o[1] + (20-4+wg_offset)*routing_wg_pitch + 2*(radius+dr)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = MZM_routing_width_max - o[0] + (-6+wg_offset)*routing_wg_pitch
+	### bend at SSC for better space efficiency
+	h = 220 - 15.4 - 29.8 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	v = GC_routing_height_ssc_min - o[1] + (20+wg_offset)*routing_wg_pitch + 2*(radius+dr)
-	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
+	dh = 0
+	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
+	### bend at SSC for better space efficiency
 	h = ssc_point[0] - o[0] - (radius+dr) - (13-wg_offset)*ssc_pitch
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
@@ -1306,7 +1413,7 @@ def GC4x4_route_cell(origin, GC_pitch, ssc_point, layer, cell_name):
 				origin[1] + (3-i) * GC_pitch,
 			]
 			o = arc_LD(o, layer, ret_cell)
-			v = - 10 - wg_offset*routing_wg_pitch
+			v = - 10 - j*routing_wg_pitch
 			o = vertical(o, v, layer, ret_cell)
 			o = arc_DL(o, layer, ret_cell)
 			h = GC_routing_width_min - o[0] + wg_offset*routing_wg_pitch
@@ -1323,6 +1430,10 @@ def GC4x4_route_cell(origin, GC_pitch, ssc_point, layer, cell_name):
 			v = GC_routing_height_ssc_min - o[1] + wg_offset*routing_wg_pitch + 2*(radius+dr)
 			o = vertical(o, v, layer, ret_cell)
 			o = arc_DR(o, layer, ret_cell)
+			### bend at SSC for better space efficiency
+			dh = 350 - GC_routing_width_min
+			o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset, dh=dh)
+			### bend at SSC for better space efficiency
 			h = ssc_point[0] - o[0] - (radius+dr) + (2+wg_offset)*ssc_pitch
 			o = horizontal(o, h, layer, ret_cell)
 			o = arc_RD(o, layer, ret_cell)
@@ -1354,6 +1465,10 @@ def GC4x1output_route_cell(origin, GC_pitch, ssc_point, layer, cell_name):
 		v = GC_routing_height_ssc_min - o[1] + wg_offset*routing_wg_pitch + 2*(radius+dr)
 		o = vertical(o, v, layer, ret_cell)
 		o = arc_DR(o, layer, ret_cell)
+		### bend at SSC for better space efficiency
+		dh = 350 - GC_routing_width_min
+		o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset, dh=dh)
+		### bend at SSC for better space efficiency
 		h = ssc_point[0] - o[0] - (radius+dr) + (2+wg_offset)*ssc_pitch
 		o = horizontal(o, h, layer, ret_cell)
 		o = arc_RD(o, layer, ret_cell)
@@ -1363,8 +1478,8 @@ def GC4x1output_route_cell(origin, GC_pitch, ssc_point, layer, cell_name):
 
 # GC 1x4 routing
 def GC1x4input_route_cell(origin, GC_pitch, layer, cell_name,
-						PINL500_01_origin, PINL200_01_origin, PINL200_02_origin, PINL500_02_origin,
-						pin_mzm_L500_end_o, pin_mzm_L200_end_o):
+						PINL500_01_origin, PINL200_01_origin, PINL100TERM_02_origin, PINL200TERM_02_origin,
+						pin_mzm_L500_end_o, pin_mzm_L200_end_o, pin_mzm_L100_TERM_end_o, pin_mzm_L200_TERM_end_o):
 	ret_cell = gdstk.Cell(cell_name)
 	top_ends = []
 	for j in range(4): # col
@@ -1386,49 +1501,41 @@ def GC1x4input_route_cell(origin, GC_pitch, layer, cell_name,
 		h = GC_routing_width_min - o[0] + wg_offset*routing_wg_pitch
 		o = horizontal(o, h, layer, ret_cell)
 		o = arc_LD(o, layer, ret_cell)
-		### bend in Sherry region for better space efficiency
-		v = (3500+1500) - o[1] - wg_offset*routing_wg_pitch
-		o = vertical(o, v, layer, ret_cell)
-		o = arc_DL(o, layer, ret_cell)
-		h = -(GC_routing_width_min - 50 - routing_wg_pitch - 3*(radius+dr)) # 5 um from dicing line
-		o = horizontal(o, h, layer, ret_cell)
-		o = arc_LD(o, layer, ret_cell)
-		### bend in Sherry region for better space efficiency
+		if j >= 2:
+			v = (3500+1500+20) - o[1]
+			o = vertical(o, v, layer, ret_cell)
+		else:
+			### bend in Sherry region for better space efficiency
+			v = (3500+1500) - o[1] - wg_offset*routing_wg_pitch
+			o = vertical(o, v, layer, ret_cell)
+			o = arc_DL(o, layer, ret_cell)
+			h = -(GC_routing_width_min - 50 - routing_wg_pitch - 3*(radius+dr)) # 5 um from dicing line
+			o = horizontal(o, h, layer, ret_cell)
+			o = arc_LD(o, layer, ret_cell)
+			### bend in Sherry region for better space efficiency
 		top_ends.append(o.copy())
 	v_3 = -97 # arbitrary value
 	v_1 = -607 # arbitrary value
-	# PINL200_02_origin
+	# PINL200TERM_02_origin
 	o = top_ends[3]
-	right_end = PINL200_02_origin.copy()
-	right_end[0] -= pin_mzm_L200_end_o[1]
+	right_end = PINL200TERM_02_origin.copy()
 	right_end[0] -= np.abs(MMI2x2_BOTLEFT_CENTER[0])
-	right_end[1] += pin_mzm_L200_end_o[0]
-	v = v_3
-	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	h = right_end[0] - o[0] - 1*(radius+dr)
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = right_end[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
-	# PINL500_02_origin
+	# PINL100TERM_02_origin
 	o = top_ends[2]
-	right_end = PINL500_02_origin.copy()
-	right_end[0] -= pin_mzm_L500_end_o[1]
+	right_end = PINL100TERM_02_origin.copy()
 	right_end[0] -= np.abs(MMI2x2_BOTLEFT_CENTER[0])
-	right_end[1] += pin_mzm_L500_end_o[0]
-	v = -1*(radius+dr-dr) # here only radius is enough
-	v += v_3 # arbitrary value
+	v = - routing_wg_pitch
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = 2 # arbitrary value
+	h = right_end[0] - o[0] - 1*(radius+dr)
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
-	o = arc_DL(o, layer, ret_cell)
-	h = right_end[0] - o[0] + 1*(radius+dr)
-	# assert h < 0
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_LD(o, layer, ret_cell)
 	v = right_end[1] - o[1]
 	o = vertical(o, v, layer, ret_cell)
 	# PINL200_01_origin

@@ -5,8 +5,8 @@
 import gdstk
 import numpy as np
 
-# AIST_PDK = gdstk.read_rawcells("../PDK_Device_Cells_20251112.gds")
-# LIB = gdstk.Library()
+AIST_PDK = gdstk.read_rawcells("../PDK_Device_Cells_20251112.gds")
+LIB = gdstk.Library()
 
 # design rule
 LAYER_SiWG   = 30
@@ -22,8 +22,6 @@ LAYER_MET    = 36 # AlCu contact and metal wire
 LAYER_PW     = 41 # probe window
 LAYER_DW     = 42 # deep window (trench)
 
-LAYER_SSC    = 53 # ssc box
-
 # constants
 wg_width = 0.44        # waveguide width (um)
 radius = 10            # waveguide bending radius (um)
@@ -31,8 +29,9 @@ dr = 0.1               # straight part length of bent waveguide (um)
 dicing_length = 50     # dicing area length, one-side (um)
 ssc_width_small = 0.16 # ssc small width (um)
 ssc_length = 100       # ssc length (um)
-ssc_pitch = 127        # ssc pitch (um)
+ssc_pitch = 50         # ssc pitch (um)
 
+# design parameters of CPW
 RF_PAD_PITCH = 125
 RF_PAD_GAP = 9
 SIG_width = 10
@@ -471,82 +470,82 @@ def new_label_cell(text, cell_name, layer=LAYER_MET):
 	ret_cell.add(*text)
 	return ret_cell
 
-# top_cell = gdstk.Cell("top_cell")
+top_cell = gdstk.Cell("top_cell")
 
-# CPWL1000_01 = new_CPW_cell(1000, "CPW_L1.0mm"); CPWL1000_01_label = new_label_cell("L1.0mm", "CPW_L1.0mm_label")
-# CPWL2000_01 = new_CPW_cell(2000, "CPW_L2.0mm"); CPWL2000_01_label = new_label_cell("L2.0mm", "CPW_L2.0mm_label")
-# Short_01 = new_Short_cell(50, "Short_L50um"); Short_01_label = new_label_cell("Short", "Short_L50um_label")
-# Open_01 = new_Open_cell(50, "Open_L50um"); Open_01_label = new_label_cell("Open", "Open_L50um_label")
-# Load_01 = new_Load_cell(50, "Load_L50um"); Load_01_label = new_label_cell("Load 50Ohm", "Load_L50um_label")
-# Load_02 = new_Load_PIN_cell(50, "Load_PIN_L50um"); Load_02_label = new_label_cell("Load PIN", "Load_PIN_L50um_label")
-# Thru_01 = new_CPW_cell(50, "Thru_L50um"); Thru_01_label = new_label_cell("Thru", "Thru_L50um_label")
+CPWL1000_01 = new_CPW_cell(1000, "CPW_L1.0mm"); CPWL1000_01_label = new_label_cell("L1.0mm", "CPW_L1.0mm_label")
+CPWL2000_01 = new_CPW_cell(2000, "CPW_L2.0mm"); CPWL2000_01_label = new_label_cell("L2.0mm", "CPW_L2.0mm_label")
+Short_01 = new_Short_cell(50, "Short_L50um"); Short_01_label = new_label_cell("Short", "Short_L50um_label")
+Open_01 = new_Open_cell(50, "Open_L50um"); Open_01_label = new_label_cell("Open", "Open_L50um_label")
+Load_01 = new_Load_cell(50, "Load_L50um"); Load_01_label = new_label_cell("Load 50Ohm", "Load_L50um_label")
+Load_02 = new_Load_PIN_cell(50, "Load_PIN_L50um"); Load_02_label = new_label_cell("Load PIN", "Load_PIN_L50um_label")
+Thru_01 = new_CPW_cell(50, "Thru_L50um"); Thru_01_label = new_label_cell("Thru", "Thru_L50um_label")
 
-# CPWL2000_01_origin			= [1700,    0]
-# CPWL2000_01_label_origin	= [1950,    0]
-# CPWL1000_01_origin			= [   0,    0]
-# CPWL1000_01_label_origin	= [ 250,    0]
+CPWL2000_01_origin			= [1700,    0]
+CPWL2000_01_label_origin	= [1950,    0]
+CPWL1000_01_origin			= [   0,    0]
+CPWL1000_01_label_origin	= [ 250,    0]
 
-# Short_01_origin				= [   0, 3500]
-# Open_01_origin				= [   0, 3000]
-# Load_01_origin				= [   0, 2500]
-# Load_02_origin				= [   0, 2000]
-# Thru_01_origin			    = [   0, 1500]
-# Short_01_label_origin		= [ Short_01_origin[0]    + 350, Short_01_origin[1]    - 50]
-# Open_01_label_origin		= [ Open_01_origin[0]     + 350, Open_01_origin[1]     - 50]
-# Load_01_label_origin		= [ Load_01_origin[0]     + 350, Load_01_origin[1]     - 50]
-# Load_02_label_origin		= [ Load_02_origin[0]     + 350, Load_02_origin[1]     - 50]
-# Thru_01_label_origin		= [ Thru_01_origin[0]     + 350, Thru_01_origin[1]     - 50]
+Short_01_origin				= [   0, 3500]
+Open_01_origin				= [   0, 3000]
+Load_01_origin				= [   0, 2500]
+Load_02_origin				= [   0, 2000]
+Thru_01_origin			    = [   0, 1500]
+Short_01_label_origin		= [ Short_01_origin[0]    + 350, Short_01_origin[1]    - 50]
+Open_01_label_origin		= [ Open_01_origin[0]     + 350, Open_01_origin[1]     - 50]
+Load_01_label_origin		= [ Load_01_origin[0]     + 350, Load_01_origin[1]     - 50]
+Load_02_label_origin		= [ Load_02_origin[0]     + 350, Load_02_origin[1]     - 50]
+Thru_01_label_origin		= [ Thru_01_origin[0]     + 350, Thru_01_origin[1]     - 50]
 
-# top_cell.add(gdstk.Reference(CPWL1000_01, origin=CPWL1000_01_origin))
-# top_cell.add(gdstk.Reference(CPWL1000_01_label, origin=CPWL1000_01_label_origin))
-# top_cell.add(gdstk.Reference(CPWL2000_01, origin=CPWL2000_01_origin))
-# top_cell.add(gdstk.Reference(CPWL2000_01_label, origin=CPWL2000_01_label_origin))
-# top_cell.add(gdstk.Reference(Short_01, origin=Short_01_origin))
-# top_cell.add(gdstk.Reference(Short_01_label, origin=Short_01_label_origin))
-# top_cell.add(gdstk.Reference(Open_01, origin=Open_01_origin))
-# top_cell.add(gdstk.Reference(Open_01_label, origin=Open_01_label_origin))
-# top_cell.add(gdstk.Reference(Load_01, origin=Load_01_origin))
-# top_cell.add(gdstk.Reference(Load_01_label, origin=Load_01_label_origin))
-# top_cell.add(gdstk.Reference(Load_02, origin=Load_02_origin))
-# top_cell.add(gdstk.Reference(Load_02_label, origin=Load_02_label_origin))
-# top_cell.add(gdstk.Reference(Thru_01, origin=Thru_01_origin))
-# top_cell.add(gdstk.Reference(Thru_01_label, origin=Thru_01_label_origin))
+top_cell.add(gdstk.Reference(CPWL1000_01, origin=CPWL1000_01_origin))
+top_cell.add(gdstk.Reference(CPWL1000_01_label, origin=CPWL1000_01_label_origin))
+top_cell.add(gdstk.Reference(CPWL2000_01, origin=CPWL2000_01_origin))
+top_cell.add(gdstk.Reference(CPWL2000_01_label, origin=CPWL2000_01_label_origin))
+top_cell.add(gdstk.Reference(Short_01, origin=Short_01_origin))
+top_cell.add(gdstk.Reference(Short_01_label, origin=Short_01_label_origin))
+top_cell.add(gdstk.Reference(Open_01, origin=Open_01_origin))
+top_cell.add(gdstk.Reference(Open_01_label, origin=Open_01_label_origin))
+top_cell.add(gdstk.Reference(Load_01, origin=Load_01_origin))
+top_cell.add(gdstk.Reference(Load_01_label, origin=Load_01_label_origin))
+top_cell.add(gdstk.Reference(Load_02, origin=Load_02_origin))
+top_cell.add(gdstk.Reference(Load_02_label, origin=Load_02_label_origin))
+top_cell.add(gdstk.Reference(Thru_01, origin=Thru_01_origin))
+top_cell.add(gdstk.Reference(Thru_01_label, origin=Thru_01_label_origin))
 
-# # layer explanations
-# LABEL_LAYER30 = new_label_cell("Layer 30: Si", "LABEL_LAYER30", layer=LAYER_SiWG)
-# LABEL_LAYER40 = new_label_cell("Layer 40: RIB", "LABEL_LAYER40", layer=LAYER_RIB)
-# LABEL_LAYER31 = new_label_cell("Layer 31: N+", "LABEL_LAYER31", layer=LAYER_NP)
-# LABEL_LAYER32 = new_label_cell("Layer 32: P+", "LABEL_LAYER32", layer=LAYER_PP)
-# LABEL_LAYER33 = new_label_cell("Layer 33: N++", "LABEL_LAYER33", layer=LAYER_NPP)
-# LABEL_LAYER34 = new_label_cell("Layer 34: P++", "LABEL_LAYER34", layer=LAYER_PPP)
-# LABEL_LAYER35 = new_label_cell("Layer 35: CONTACT TO PN", "LABEL_LAYER35", layer=LAYER_CT2PN)
-# LABEL_LAYER30_origin		= [2200, 3800]
-# LABEL_LAYER40_origin		= [2200, 3650]
-# LABEL_LAYER31_origin		= [2200, 3500]
-# LABEL_LAYER32_origin		= [2200, 3350]
-# LABEL_LAYER33_origin		= [2200, 3200]
-# LABEL_LAYER34_origin		= [2200, 3050]
-# LABEL_LAYER35_origin		= [2200, 2900]
-# top_cell.add(gdstk.Reference(LABEL_LAYER30, origin=LABEL_LAYER30_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER40, origin=LABEL_LAYER40_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER31, origin=LABEL_LAYER31_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER32, origin=LABEL_LAYER32_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER33, origin=LABEL_LAYER33_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER34, origin=LABEL_LAYER34_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER35, origin=LABEL_LAYER35_origin))
+# layer explanations
+LABEL_LAYER30 = new_label_cell("Layer 30: Si", "LABEL_LAYER30", layer=LAYER_SiWG)
+LABEL_LAYER40 = new_label_cell("Layer 40: RIB", "LABEL_LAYER40", layer=LAYER_RIB)
+LABEL_LAYER31 = new_label_cell("Layer 31: N+", "LABEL_LAYER31", layer=LAYER_NP)
+LABEL_LAYER32 = new_label_cell("Layer 32: P+", "LABEL_LAYER32", layer=LAYER_PP)
+LABEL_LAYER33 = new_label_cell("Layer 33: N++", "LABEL_LAYER33", layer=LAYER_NPP)
+LABEL_LAYER34 = new_label_cell("Layer 34: P++", "LABEL_LAYER34", layer=LAYER_PPP)
+LABEL_LAYER35 = new_label_cell("Layer 35: CONTACT TO PN", "LABEL_LAYER35", layer=LAYER_CT2PN)
+LABEL_LAYER30_origin		= [2200, 3800]
+LABEL_LAYER40_origin		= [2200, 3650]
+LABEL_LAYER31_origin		= [2200, 3500]
+LABEL_LAYER32_origin		= [2200, 3350]
+LABEL_LAYER33_origin		= [2200, 3200]
+LABEL_LAYER34_origin		= [2200, 3050]
+LABEL_LAYER35_origin		= [2200, 2900]
+top_cell.add(gdstk.Reference(LABEL_LAYER30, origin=LABEL_LAYER30_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER40, origin=LABEL_LAYER40_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER31, origin=LABEL_LAYER31_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER32, origin=LABEL_LAYER32_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER33, origin=LABEL_LAYER33_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER34, origin=LABEL_LAYER34_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER35, origin=LABEL_LAYER35_origin))
 
-# LABEL_LAYER36 = new_label_cell("Layer 36: METAL", "LABEL_LAYER36", layer=LAYER_MET)
-# LABEL_LAYER38 = new_label_cell("Layer 38: TIN", "LABEL_LAYER38", layer=LAYER_TIN)
-# LABEL_LAYER39 = new_label_cell("Layer 39: CONTACT TO TIN", "LABEL_LAYER39", layer=LAYER_CT2TIN)
-# LABEL_LAYER41 = new_label_cell("Layer 41: PAD WINDOW", "LABEL_LAYER41", layer=LAYER_PW)
-# LABEL_LAYER36_origin		= [2200, 2600]
-# LABEL_LAYER38_origin		= [2200, 2450]
-# LABEL_LAYER39_origin		= [2200, 2300]
-# LABEL_LAYER41_origin		= [2200, 2150]
-# top_cell.add(gdstk.Reference(LABEL_LAYER36, origin=LABEL_LAYER36_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER38, origin=LABEL_LAYER38_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER39, origin=LABEL_LAYER39_origin))
-# top_cell.add(gdstk.Reference(LABEL_LAYER41, origin=LABEL_LAYER41_origin))
+LABEL_LAYER36 = new_label_cell("Layer 36: METAL", "LABEL_LAYER36", layer=LAYER_MET)
+LABEL_LAYER38 = new_label_cell("Layer 38: TIN", "LABEL_LAYER38", layer=LAYER_TIN)
+LABEL_LAYER39 = new_label_cell("Layer 39: CONTACT TO TIN", "LABEL_LAYER39", layer=LAYER_CT2TIN)
+LABEL_LAYER41 = new_label_cell("Layer 41: PAD WINDOW", "LABEL_LAYER41", layer=LAYER_PW)
+LABEL_LAYER36_origin		= [2200, 2600]
+LABEL_LAYER38_origin		= [2200, 2450]
+LABEL_LAYER39_origin		= [2200, 2300]
+LABEL_LAYER41_origin		= [2200, 2150]
+top_cell.add(gdstk.Reference(LABEL_LAYER36, origin=LABEL_LAYER36_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER38, origin=LABEL_LAYER38_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER39, origin=LABEL_LAYER39_origin))
+top_cell.add(gdstk.Reference(LABEL_LAYER41, origin=LABEL_LAYER41_origin))
 
-# LIB.add(top_cell, *top_cell.dependencies(True))
-# LIB.write_gds("RF_calib_pattern_v2.gds")
+LIB.add(top_cell, *top_cell.dependencies(True))
+LIB.write_gds("RF_calib_pattern_v2.gds")

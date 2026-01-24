@@ -14,6 +14,7 @@ last change: 2026/01/18
 
 - place no dummy at SSC area with large MFD
 - dicing line 35~50 um width, including polishing length
+- remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space
 
 ## Test patterns
 - 50 Ohm load
@@ -28,6 +29,11 @@ last change: 2026/01/18
 - GC to GC B2B test port
 
 ## Experiments to do
+- PIN MZM measurement
+	- L=500,200: PIN resistance, DC bias switching, RF bandwidth
+	- L=100,200: PIN resistance, TIN resistance, DC bias switching, RF bandwidth
 - GC 1x4 in -> GC 4x4 out (MVM)
 - GC 1x4 in -> GC 4x1 out (MVM)
 - GC 4x4 in -> SLM -> PD? (MVM)
+- RF SOLT calibration
+- RF Thru L/2L (L=1.0mm) de-embedding

@@ -78,7 +78,10 @@ top_cell.add(
 Mani_marker_size = 200
 Mani_marker_pitch = 500
 Mani_marker_cell = gdstk.Cell("Mani_marker")
-Mani_marker_cell.add(gdstk.rectangle((-100,-100),(100,100), layer=lib.LAYER_MET, datatype=0))
+Mani_marker_cell.add(
+	gdstk.rectangle((-100,-100),(100,100), layer=lib.LAYER_MET, datatype=0),
+	# gdstk.rectangle((-150,-150),(150,150), layer=lib.LAYER_NODMY, datatype=0),
+)
 top_cell.add(
 	gdstk.Reference(
 		Mani_marker_cell,
@@ -86,7 +89,7 @@ top_cell.add(
 			GC_input_origin[0] - 0.5*Mani_marker_pitch,
 			GC_input_origin[1] - 1.0*Mani_marker_size,
 		],
-		columns=2,
+		columns=1,
 		rows=2,
 		spacing=(500+3*GC_pitch, Mani_marker_pitch - 100)
 	),
@@ -96,26 +99,26 @@ top_cell.add(
 			GC_input_origin[0] - 0.5*Mani_marker_pitch,
 			GC_input_origin[1] + 4.0*Mani_marker_size,
 		],
-		columns=2,
+		columns=1,
 		rows=1,
 		spacing=(500+3*GC_pitch, Mani_marker_pitch)
 	)
 )
 
 #---------- MZM test patterns ----------#
-o = [755, JIANG_HEIGHT+455]
+o = [745-0.35, JIANG_HEIGHT+457-0.616]
 PINL200_01_origin = [o[0]+ 305, o[1],]
-PINL200_02_origin = [o[0]+ 325 + 31.2 + 35, o[1]+ 850,]
 PINL500_01_origin = [o[0]+   0, o[1],]
-PINL500_02_origin = [o[0]- 380 + 36.2 + 95, o[1]+ 850,]
 pin_mzm_L200, pin_mzm_L200_end_o = lib.new_PIN_AMZM_cell(200, "CR_PINL200AMZ")
 pin_mzm_L500, pin_mzm_L500_end_o = lib.new_PIN_AMZM_cell(500, "CR_PINL500AMZ")
-pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL200AMZ_TERM")
-pin_mzm_L500_TERM, pin_mzm_L500_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(100, "CR_PINL500AMZ_TERM")
 top_cell.add(gdstk.Reference(pin_mzm_L200, origin=PINL200_01_origin, rotation=np.pi/2))
-top_cell.add(gdstk.Reference(pin_mzm_L200_TERM, origin=PINL200_02_origin, rotation=-np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L500, origin=PINL500_01_origin, rotation=np.pi/2))
-top_cell.add(gdstk.Reference(pin_mzm_L500_TERM, origin=PINL500_02_origin, rotation=-np.pi/2))
+PINL100TERM_02_origin = [o[0]- 250 + 1.2, o[1]+ 850,]
+PINL200TERM_02_origin = [o[0]+ 390 + 1.2, o[1]+ 850,]
+pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(100, "CR_PINL100AMZ_TERM")
+pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL200AMZ_TERM")
+top_cell.add(gdstk.Reference(pin_mzm_L100_TERM, origin=PINL100TERM_02_origin, rotation=-np.pi/2))
+top_cell.add(gdstk.Reference(pin_mzm_L200_TERM, origin=PINL200TERM_02_origin, rotation=-np.pi/2))
 
 #---------- right ssc region ----------#
 ssc_right_origin = [CHIP_WIDTH-150, JIANG_HEIGHT]
@@ -177,14 +180,14 @@ ssc_point = [
 	ssc_right_origin[0],
 	ssc_right_origin[1] + lib.ssc_length + lib.dicing_length,
 ]
-PINL500_01_route = lib.PINL500_01_route_cell(PINL500_01_origin, pin_mzm_L500_end_o, ssc_point, lib.LAYER_SiWG, "PINL500_01_route", right_end=PINL200_02_origin)
-PINL200_01_route = lib.PINL200_01_route_cell(PINL200_01_origin, pin_mzm_L200_end_o, ssc_point, lib.LAYER_SiWG, "PINL200_01_route", right_end=PINL200_02_origin)
-PINL500_02_route = lib.PINL500_02_route_cell(PINL500_02_origin, pin_mzm_L500_end_o, ssc_point, lib.LAYER_SiWG, "PINL500_02_route")
-PINL200_02_route = lib.PINL200_02_route_cell(PINL200_02_origin, pin_mzm_L200_end_o, ssc_point, lib.LAYER_SiWG, "PINL200_02_route")
+PINL500_01_route = lib.PINL500_01_route_cell(PINL500_01_origin, pin_mzm_L500_end_o, ssc_point, lib.LAYER_SiWG, "PINL500_01_route", right_end=PINL200TERM_02_origin)
+PINL200_01_route = lib.PINL200_01_route_cell(PINL200_01_origin, pin_mzm_L200_end_o, ssc_point, lib.LAYER_SiWG, "PINL200_01_route", right_end=PINL200TERM_02_origin)
+PINL100TERM_02_route = lib.PINL100TERM_02_route_cell(PINL100TERM_02_origin, pin_mzm_L100_TERM_end_o, ssc_point, lib.LAYER_SiWG, "PINL100TERM_02_route")
+PINL200TERM_02_route = lib.PINL200TERM_02_route_cell(PINL200TERM_02_origin, pin_mzm_L200_TERM_end_o, ssc_point, lib.LAYER_SiWG, "PINL200TERM_02_route")
 top_cell.add(gdstk.Reference(PINL500_01_route, origin=(0,0)))
 top_cell.add(gdstk.Reference(PINL200_01_route, origin=(0,0)))
-top_cell.add(gdstk.Reference(PINL500_02_route, origin=(0,0)))
-top_cell.add(gdstk.Reference(PINL200_02_route, origin=(0,0)))
+top_cell.add(gdstk.Reference(PINL100TERM_02_route, origin=(0,0)))
+top_cell.add(gdstk.Reference(PINL200TERM_02_route, origin=(0,0)))
 
 #---------- GC array routing ----------#
 # GC 4x4 array
@@ -202,15 +205,7 @@ ssc_point = [
 GC4x1output_route = lib.GC4x1output_route_cell(GC4x1_output_origin, GC_pitch, ssc_point, lib.LAYER_SiWG, "GC4x1output_route")
 top_cell.add(gdstk.Reference(GC4x1output_route, origin=(0,0)))
 # GC 1x4 input
-right_ends_L500 = [
-	PINL500_01_origin,
-	PINL500_02_origin,
-]
-right_ends_L200 = [
-	PINL200_01_origin,
-	PINL200_02_origin,
-]
-GC1x4input_route = lib.GC1x4input_route_cell(GC_input_origin, GC_pitch, lib.LAYER_SiWG, "GC1x4input_route", PINL500_01_origin, PINL200_01_origin, PINL200_02_origin, PINL500_02_origin, pin_mzm_L500_end_o, pin_mzm_L200_end_o)
+GC1x4input_route = lib.GC1x4input_route_cell(GC_input_origin, GC_pitch, lib.LAYER_SiWG, "GC1x4input_route", PINL500_01_origin, PINL200_01_origin, PINL100TERM_02_origin, PINL200TERM_02_origin, pin_mzm_L500_end_o, pin_mzm_L200_end_o, pin_mzm_L100_TERM_end_o, pin_mzm_L200_TERM_end_o)
 top_cell.add(gdstk.Reference(GC1x4input_route, origin=(0,0)))
 
 
@@ -225,19 +220,19 @@ Through_01 = lib_RF.new_CPW_cell(100, "THROUGH_L100um")
 
 CPW_o = [300, 3500+1500+10]
 
-CPW2L_01_origin   = [CPW_o[0]+   0, CPW_o[1]+   0]
-CPW1L_01_origin   = [CPW_o[0]+1000, CPW_o[1]+3500]
-Short_01_origin   = [CPW_o[0]+ 400, CPW_o[1]+3000]
-Open_01_origin    = [CPW_o[0]+ 400, CPW_o[1]+2500]
-Load_01_origin    = [CPW_o[0]+ 400, CPW_o[1]+2000]
-Through_01_origin = [CPW_o[0]+ 400, CPW_o[1]+1500]
+CPW1L_01_origin   = [CPW_o[0]+1000, CPW_o[1]+3800 - 46]
+CPW2L_01_origin   = [CPW_o[0]+ 170, CPW_o[1]+ 170]
+Short_01_origin   = [CPW_o[0]+ 170, CPW_o[1]+3360]
+Open_01_origin    = [CPW_o[0]+ 170, CPW_o[1]+2930]
+Load_01_origin    = [CPW_o[0]+ 170, CPW_o[1]+2500]
+Through_01_origin = [CPW_o[0]+1100 - 22, CPW_o[1]-1000 + 50 + 8.616]
 
 top_cell.add(gdstk.Reference(CPW2L_01, origin=CPW2L_01_origin))
 top_cell.add(gdstk.Reference(CPW1L_01, origin=CPW1L_01_origin))
 top_cell.add(gdstk.Reference(Short_01, origin=Short_01_origin))
 top_cell.add(gdstk.Reference(Open_01, origin=Open_01_origin))
 top_cell.add(gdstk.Reference(Load_01, origin=Load_01_origin))
-top_cell.add(gdstk.Reference(Through_01, origin=Through_01_origin))
+top_cell.add(gdstk.Reference(Through_01, origin=Through_01_origin, rotation=np.pi/2))
 
 lib.LIB.add(top_cell, *top_cell.dependencies(True))
 lib.LIB.write_gds("AIST2025_CR_v4.gds")
