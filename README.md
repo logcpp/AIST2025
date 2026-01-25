@@ -15,6 +15,7 @@ last change: 2026/01/18
 - place no dummy at SSC area with large MFD
 - dicing line 35~50 um width, including polishing length
 - remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space
+- NODMY area for GC and micromanipulator markers
 
 ## Test patterns
 - 50 Ohm load
@@ -27,6 +28,9 @@ last change: 2026/01/18
 - PIN doped Si with different lengths
 - TiN MZM test patterns (w/ and w/o trench)
 - GC to GC B2B test port
+- SSC to GC (Ren) w/o NODMY
+- SSC to GC (Ren) w/ NODMY
+- 1x2 MMI test pattern
 
 ## Experiments to do
 - PIN MZM measurement
