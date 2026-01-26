@@ -31,6 +31,7 @@ last change: 2026/01/18
 - SSC to GC (Ren) w/o NODMY
 - SSC to GC (Ren) w/ NODMY
 - 1x2 MMI test pattern
+- PIN loss test pattern (for ring, MZM)
 
 ## Experiments to do
 - PIN MZM measurement
