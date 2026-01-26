@@ -42,7 +42,10 @@ GAP_width = 9
 RF_PAD_size = RF_PAD_PITCH - GAP_width
 RF_GND_taper_length = 45
 RF_SIG_taper_length = RF_GND_taper_length - GAP_width
+RF_PAD_taper_length = 45
 RF_PAD_taper_end = 30.5
+
+PIN_distance = 2*RF_PAD_PITCH - GAP_width - SIG_width
 
 def get_cell_size(cell):
 	min_xy, max_xy = cell.bounding_box()
@@ -747,6 +750,283 @@ def new_label_cell(text, cell_name, layer=LAYER_MET):
 	ret_cell.add(*text)
 	return ret_cell
 
+#-------------------- MZM functions --------------------#
+# => 33.3 Ω based on sheet resistance = 27 Ω/sq
+def new_TIN_SERIES_TERM_cell(TIN_width=60, TIN_length=90):
+	# top pads
+	ret_cell = gdstk.Cell("TIN_SERIES_TERM_30Ohm")
+	pad_origin = (0, 0)
+	# GSGSG pad
+	for i in range(5):
+		pad_offset = i - 2
+		#----- LAYER_MET = 36 (AlCu contact and metal wire) -----#
+		layer = LAYER_MET
+		MET_MIDDLE_corner_botleft = [
+			pad_origin[0] - pad_offset*RF_PAD_PITCH - RF_PAD_size/2,
+			pad_origin[1] - RF_PAD_taper_length - RF_PAD_size
+		]
+		MET_MIDDLE_corner_topright = [
+			pad_origin[0] - pad_offset*RF_PAD_PITCH + RF_PAD_size/2,
+			pad_origin[1] - RF_PAD_taper_length
+		]
+		pad_metal = gdstk.rectangle(MET_MIDDLE_corner_botleft, MET_MIDDLE_corner_topright, layer=layer, datatype=0)
+		ret_cell.add(pad_metal)
+		#----- LAYER_PW = 41 (AlCu contact and metal wire) -----#
+		layer = LAYER_PW
+		PW_MIDDLE_corner_botleft = [
+			MET_MIDDLE_corner_botleft[0] + 5,
+			MET_MIDDLE_corner_botleft[1] + 5,
+		]
+		PW_MIDDLE_corner_topright = [
+			MET_MIDDLE_corner_topright[0] - 5,
+			MET_MIDDLE_corner_topright[1] - 5,
+		]
+		assert RF_PAD_PITCH - (PW_MIDDLE_corner_topright[0]-PW_MIDDLE_corner_botleft[0]) > 4 # design rule
+		pad_window = gdstk.rectangle(PW_MIDDLE_corner_botleft, PW_MIDDLE_corner_topright, layer=layer, datatype=0)
+		ret_cell.add(pad_window)
+	#----- LAYER_CT2TIN = 39 # contact to TiN -----#
+	layer = LAYER_CT2TIN
+	contact_width = TIN_width - 3 * 2
+	contact_length = 10
+	# left
+	contact_bot_left_botleft = [
+		pad_origin[0] - 1*RF_PAD_PITCH - contact_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length
+	]
+	contact_bot_left_topright = [
+		pad_origin[0] - 1*RF_PAD_PITCH + contact_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3
+	]
+	contact_bot_left = gdstk.rectangle(contact_bot_left_botleft, contact_bot_left_topright, layer=layer, datatype=0)
+	ret_cell.add(contact_bot_left)
+	# right
+	contact_bot_right_botleft = [
+		pad_origin[0] + 1*RF_PAD_PITCH - contact_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length
+	]
+	contact_bot_right_topright = [
+		pad_origin[0] + 1*RF_PAD_PITCH + contact_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3
+	]
+	contact_bot_right = gdstk.rectangle(contact_bot_right_botleft, contact_bot_right_topright, layer=layer, datatype=0)
+	ret_cell.add(contact_bot_right)
+	#----- LAYER_TIN = 38 # contact to TiN -----#
+	layer = LAYER_TIN
+	# left
+	TIN_left_botleft = [
+		pad_origin[0] - 1*RF_PAD_PITCH - TIN_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3
+	]
+	TIN_left_topright = [
+		pad_origin[0] - 1*RF_PAD_PITCH + TIN_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3 + TIN_length
+	]
+	TIN_left = gdstk.rectangle(TIN_left_botleft, TIN_left_topright, layer=layer, datatype=0)
+	ret_cell.add(TIN_left)
+	# right
+	TIN_right_botleft = [
+		pad_origin[0] + 1*RF_PAD_PITCH - TIN_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3
+	]
+	TIN_right_topright = [
+		pad_origin[0] + 1*RF_PAD_PITCH + TIN_width/2,
+		pad_origin[1] - RF_PAD_taper_length - 3 - contact_length - 3 + TIN_length
+	]
+	TIN_right = gdstk.rectangle(TIN_right_botleft, TIN_right_topright, layer=layer, datatype=0)
+	ret_cell.add(TIN_right)
+	#----- LAYER_CT2TIN = 39 # contact to TiN -----#
+	layer = LAYER_CT2TIN
+	contact_width = TIN_width - 3 * 2
+	contact_length = 10
+	# left
+	contact_top_left_botleft = [
+		contact_bot_left_botleft[0],
+		contact_bot_left_botleft[1] + TIN_length - 3 -contact_length - 3
+	]
+	contact_top_left_topright = [
+		contact_bot_left_topright[0],
+		contact_bot_left_topright[1] + TIN_length - 3 -contact_length - 3
+	]
+	contact_top_left = gdstk.rectangle(contact_top_left_botleft, contact_top_left_topright, layer=layer, datatype=0)
+	ret_cell.add(contact_top_left)
+	# right
+	contact_top_right_botleft = [
+		contact_bot_right_botleft[0],
+		contact_bot_right_botleft[1] + TIN_length - 3 -contact_length - 3
+	]
+	contact_top_right_topright = [
+		contact_bot_right_topright[0],
+		contact_bot_right_topright[1] + TIN_length - 3 -contact_length - 3
+	]
+	contact_top_right = gdstk.rectangle(contact_top_right_botleft, contact_top_right_topright, layer=layer, datatype=0)
+	ret_cell.add(contact_top_right)
+	#----- LAYER_MET = 36 (AlCu contact and metal wire) -----#
+	layer = LAYER_MET
+	# GND connection
+	for i in range(5):
+		pad_offset = i - 2
+		if i%2 == 1:
+			continue
+		#----- LAYER_MET = 36 (AlCu contact and metal wire) -----#
+		layer = LAYER_MET
+		MET_MIDDLE_corner_botleft = [
+			pad_origin[0] - pad_offset*RF_PAD_PITCH - RF_PAD_size/2,
+			pad_origin[1] - RF_PAD_taper_length
+		]
+		MET_MIDDLE_corner_topright = [
+			pad_origin[0] - pad_offset*RF_PAD_PITCH + RF_PAD_size/2,
+			pad_origin[1] - RF_PAD_taper_length + TIN_length - 16*2
+		]
+		pad_metal = gdstk.rectangle(MET_MIDDLE_corner_botleft, MET_MIDDLE_corner_topright, layer=layer, datatype=0)
+		ret_cell.add(pad_metal)
+	return ret_cell
+TIN_SERIES_TERM_30Ohm = new_TIN_SERIES_TERM_cell()
+def PAD_structure(PIN_length, RF_PAD_PITCH, start_point, cell_name):
+	ret_cell = gdstk.Cell(cell_name)
+	taper_left_GND_topleft    = RF_PAD_cell_points[0]
+	taper_left_GND_topright   = RF_PAD_cell_points[1]
+	taper_left_SIG_topleft    = RF_PAD_cell_points[2]
+	taper_left_SIG_topright   = RF_PAD_cell_points[3]
+	taper_middle_GND_topleft  = RF_PAD_cell_points[4]
+	taper_middle_GND_topright = RF_PAD_cell_points[5]
+	taper_right_SIG_topleft   = RF_PAD_cell_points[6]
+	taper_right_SIG_topright  = RF_PAD_cell_points[7]
+	taper_right_GND_topleft   = RF_PAD_cell_points[8]
+	taper_right_GND_topright  = RF_PAD_cell_points[9]
+	# bottom pads
+	ret_cell.add(gdstk.Reference(RF_PAD_cell))
+	# metal line
+	layer = LAYER_MET
+	left_GND_line = gdstk.rectangle(
+		taper_left_GND_topleft,
+		[taper_left_GND_topright[0], taper_left_GND_topright[1] + PIN_length],
+		layer=layer, datatype=0
+	)
+	left_SIG_line = gdstk.rectangle(
+		taper_left_SIG_topleft,
+		[taper_left_SIG_topright[0], taper_left_SIG_topright[1] + PIN_length],
+		layer=layer, datatype=0
+	)
+	middle_GND_line = gdstk.rectangle(
+		taper_middle_GND_topleft,
+		[taper_middle_GND_topright[0], taper_middle_GND_topright[1] + PIN_length],
+		layer=layer, datatype=0
+	)
+	right_SIG_line = gdstk.rectangle(
+		taper_right_SIG_topleft,
+		[taper_right_SIG_topright[0], taper_right_SIG_topright[1] + PIN_length],
+		layer=layer, datatype=0
+	)
+	right_GND_line = gdstk.rectangle(
+		taper_right_GND_topleft,
+		[taper_right_GND_topright[0], taper_right_GND_topright[1] + PIN_length],
+		layer=layer, datatype=0
+	)
+	ret_cell.add(left_GND_line)
+	ret_cell.add(left_SIG_line)
+	ret_cell.add(middle_GND_line)
+	ret_cell.add(right_SIG_line)
+	ret_cell.add(right_GND_line)
+	# top pads
+	ret_cell.add(gdstk.Reference(RF_PAD_cell, origin=(0, PIN_length), x_reflection=True))
+	return ret_cell
+def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
+	ret_cell = gdstk.Cell(cell_name)
+	## left PIN
+	PIN, end_o = PIN_structure(PIN_length, [0, -RF_PAD_taper_end], f"PIN_L{PIN_length}")
+	PIN_origin = [ -1*RF_PAD_PITCH + SIG_width/2 + GAP_width/2, 0 ]
+	ret_cell.add( gdstk.Reference(PIN, origin=PIN_origin))
+	PIN_left_o = PIN_origin.copy()
+	## right PIN
+	PIN, end_o = PIN_structure(PIN_length, [0, -RF_PAD_taper_end], f"PIN_L{PIN_length}")
+	PIN_origin = [ +1*RF_PAD_PITCH - SIG_width/2 - GAP_width/2, 0 ]
+	ret_cell.add( gdstk.Reference(PIN, origin=PIN_origin))
+	PIN_right_o = PIN_origin.copy()
+	## dummy waveguides
+	layer = LAYER_SiWG
+	MMI2x2_BOTLEFT_CENTER  = [-0.55, 0.0]
+	MMI2x2_BOTRIGHT_CENTER = [+0.55, 0.0]
+	MMI2x2_TOPLEFT_CENTER  = [-0.55, 41.016]
+	MMI2x2_TOPRIGHT_CENTER = [+0.55, 41.016]
+	## bot left
+	o = [PIN_left_o[0], PIN_left_o[1] - RF_PAD_taper_end]
+	o = arc_DR(o, layer, ret_cell)
+	h = MMI2x2_TOPLEFT_CENTER[0] - o[0] - (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	## bot right
+	o = [PIN_right_o[0], PIN_right_o[1] - RF_PAD_taper_end]
+	o = arc_DL(o, layer, ret_cell)
+	h = MMI2x2_TOPRIGHT_CENTER[0] - o[0] + (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LD(o, layer, ret_cell)
+	## bot 2x2 MMI
+	ret_cell.add(gdstk.Reference(AIST_PDK["AIST_MMI_2x2"], origin=[o[0]-MMI2x2_BOTRIGHT_CENTER[0], o[1]], x_reflection=True)); o[1] -= MMI2x2_TOPLEFT_CENTER[1]
+	MMI_bot_point = o.copy()
+	# left end
+	o = [MMI_bot_point[0] + 2*MMI2x2_BOTLEFT_CENTER[0], MMI_bot_point[1]]
+	o = arc_DL(o, layer, ret_cell)
+	h = -RF_PAD_PITCH/2 - o[0] + (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LD(o, layer, ret_cell)
+	# right end
+	o = [MMI_bot_point[0], MMI_bot_point[1]]
+	o = arc_DR(o, layer, ret_cell)
+	h = +RF_PAD_PITCH/2 - o[0] - (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	## top left
+	o = [PIN_left_o[0], PIN_left_o[1] + end_o[1]]
+	o = arc_UR(o, layer, ret_cell)
+	h = MMI2x2_TOPLEFT_CENTER[0] - o[0] - (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RU(o, layer, ret_cell)
+	## top right
+	o = [PIN_right_o[0], PIN_right_o[1] + end_o[1]]
+	o = arc_UL(o, layer, ret_cell)
+	h = MMI2x2_TOPRIGHT_CENTER[0] - o[0] + (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LU(o, layer, ret_cell)
+	## top 2x2 MMI
+	ret_cell.add(gdstk.Reference(AIST_PDK["AIST_MMI_2x2"], origin=[o[0]-MMI2x2_TOPRIGHT_CENTER[0], o[1]])); o[1] += MMI2x2_TOPLEFT_CENTER[1]
+	MMI_top_point = o.copy()
+	# left end
+	o = [MMI_top_point[0] - 2*MMI2x2_TOPRIGHT_CENTER[0], MMI_top_point[1]]
+	o = arc_UL(o, layer, ret_cell)
+	h = -RF_PAD_PITCH/2 - o[0] + (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LU(o, layer, ret_cell)
+	# right end
+	o = [MMI_top_point[0], MMI_top_point[1]]
+	o = arc_UR(o, layer, ret_cell)
+	h = +RF_PAD_PITCH/2 - o[0] - (radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RU(o, layer, ret_cell)
+	ret_o = o.copy()
+	## PAD cell
+	SIG_GND_line_length = PIN_length + 1
+	PAD_cell = PAD_structure(SIG_GND_line_length, RF_PAD_PITCH, [0,0], cell_name+"PAD")
+	PAD_origin = [
+		(PIN_left_o[0]+PIN_right_o[0])/2,
+		(PIN_left_o[1]+PIN_right_o[1])/2
+	]
+	ret_cell.add(gdstk.Reference(PAD_cell, origin=PAD_origin))
+	## TIN TERM
+	if with_TERM:
+		TIN_contact_length = 16 * 2
+		TIN_length = 90
+		TIN_TERM_origin = [
+			PAD_origin[0],
+			PAD_origin[1] - RF_PAD_size - TIN_length + TIN_contact_length
+		]
+		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_30Ohm, origin=TIN_TERM_origin))
+	# # label
+	# label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
+	# w, h = get_cell_size(label_cell)
+	# ret_cell.add(gdstk.Reference(label_cell, origin=(525-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
+	return ret_cell, ret_o
+#-------------------- MZM functions --------------------#
+
 top_cell = gdstk.Cell("top_cell")
 
 CPWL1000_01 = new_CPW_cell(1000, "CPW_L1.0mm"); CPWL1000_01_label = new_label_cell("L1.0mm", "CPW_L1.0mm_label")
@@ -756,6 +1036,7 @@ Open_01 = new_Open_cell(50, "Open_L50um"); Open_01_label = new_label_cell("Open"
 Load_01 = new_Load_cell(50, "Load_L50um"); Load_01_label = new_label_cell("Load 50Ohm", "Load_L50um_label")
 Load_02 = new_Load_PIN_cell(50, "Load_PIN_L50um"); Load_02_label = new_label_cell("Load PIN", "Load_PIN_L50um_label")
 Thru_01 = new_CPW_cell(50, "Thru_L50um"); Thru_01_label = new_label_cell("Thru", "Thru_L50um_label")
+pin_mzm_L50_GC_01, pin_mzm_L50_GC_end_o = new_PIN_AMZM_GC_cell(50, "Load_PIN_L50um_TERM", with_TERM=True); pin_mzm_L50_GC_01_label = new_label_cell("Load PIN TERM", "Load_PIN_L50um_TERM_label")
 
 CPWL2000_01_origin			= [1700,          0]
 CPWL2000_01_label_origin	= [1700 + 350,    0]
@@ -767,11 +1048,13 @@ Open_01_origin				= [   0, 3000]
 Load_01_origin				= [   0, 2500]
 Load_02_origin				= [   0, 2000]
 Thru_01_origin			    = [   0, 1500]
-Short_01_label_origin		= [ Short_01_origin[0]    + 350, Short_01_origin[1]    - 50]
-Open_01_label_origin		= [ Open_01_origin[0]     + 350, Open_01_origin[1]     - 50]
-Load_01_label_origin		= [ Load_01_origin[0]     + 350, Load_01_origin[1]     - 50]
-Load_02_label_origin		= [ Load_02_origin[0]     + 350, Load_02_origin[1]     - 50]
-Thru_01_label_origin		= [ Thru_01_origin[0]     + 350, Thru_01_origin[1]     - 50]
+pin_mzm_L50_GC_01_origin    = [ Load_02_origin[0]        - 800, Load_02_origin[1]            ]
+Short_01_label_origin		= [ Short_01_origin[0]       + 350, Short_01_origin[1]       - 50]
+Open_01_label_origin		= [ Open_01_origin[0]        + 350, Open_01_origin[1]        - 50]
+Load_01_label_origin		= [ Load_01_origin[0]        + 350, Load_01_origin[1]        - 50]
+Load_02_label_origin		= [ Load_02_origin[0]        + 350, Load_02_origin[1]        - 50]
+Thru_01_label_origin		= [ Thru_01_origin[0]        + 350, Thru_01_origin[1]        - 50]
+pin_mzm_L50_GC_01_label_origin = [ pin_mzm_L50_GC_01_origin[0] - 1450, Load_02_origin[1] - 50]
 
 top_cell.add(gdstk.Reference(CPWL1000_01, origin=CPWL1000_01_origin))
 top_cell.add(gdstk.Reference(CPWL1000_01_label, origin=CPWL1000_01_label_origin))
@@ -787,6 +1070,8 @@ top_cell.add(gdstk.Reference(Load_02, origin=Load_02_origin))
 top_cell.add(gdstk.Reference(Load_02_label, origin=Load_02_label_origin))
 top_cell.add(gdstk.Reference(Thru_01, origin=Thru_01_origin))
 top_cell.add(gdstk.Reference(Thru_01_label, origin=Thru_01_label_origin))
+top_cell.add(gdstk.Reference(pin_mzm_L50_GC_01, origin=pin_mzm_L50_GC_01_origin))
+top_cell.add(gdstk.Reference(pin_mzm_L50_GC_01_label, origin=pin_mzm_L50_GC_01_label_origin))
 
 # layer explanations
 LABEL_LAYER30 = new_label_cell("Layer 30: Si", "LABEL_LAYER30", layer=LAYER_SiWG)

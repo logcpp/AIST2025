@@ -41,8 +41,12 @@ SIG_width = 10
 GND_width = 50
 GAP_width = 9
 RF_PAD_size = RF_PAD_PITCH - GAP_width
+RF_GND_taper_length = 45
+RF_SIG_taper_length = RF_GND_taper_length - GAP_width
 RF_PAD_taper_length = 45
 RF_PAD_taper_end = 30.5
+
+PIN_distance = 2*RF_PAD_PITCH - GAP_width - SIG_width
 
 def get_cell_size(cell):
 	min_xy, max_xy = cell.bounding_box()
@@ -331,11 +335,11 @@ def new_RF_PAD_cell():
 		layer = LAYER_MET
 		MET_MIDDLE_corner_botleft = [
 			- pad_offset*RF_PAD_PITCH - RF_PAD_size/2,
-			origin[1] - RF_PAD_taper_length - RF_PAD_size
+			origin[1] - RF_GND_taper_length - RF_PAD_size
 		]
 		MET_MIDDLE_corner_topright = [
 			- pad_offset*RF_PAD_PITCH + RF_PAD_size/2,
-			origin[1] - RF_PAD_taper_length
+			origin[1] - RF_GND_taper_length
 		]
 		pad_metal = gdstk.rectangle(MET_MIDDLE_corner_botleft, MET_MIDDLE_corner_topright, layer=layer, datatype=0)
 		ret_cell.add(pad_metal)
@@ -355,45 +359,63 @@ def new_RF_PAD_cell():
 	# taper
 	#----- LAYER_MET = 36 (AlCu contact and metal wire) -----#
 	layer = LAYER_MET
+	# left SIG
+	taper_left_SIG_botleft  = [ -1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_left_SIG_botright = [ -1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_left_SIG_topleft  = [ -1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length ]
+	taper_left_SIG_topright = [ -1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length ]
+	taper_left_SIG = gdstk.rectangle(taper_left_SIG_botleft, taper_left_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_left_SIG) # large pad
+	taper_left_SIG_topleft[0]  = -1*RF_PAD_PITCH - SIG_width/2
+	taper_left_SIG_topright[0] = -1*RF_PAD_PITCH + SIG_width/2
+	taper_left_SIG_botleft  = taper_left_SIG_topleft.copy()
+	taper_left_SIG_botright = taper_left_SIG_topright.copy()
+	taper_left_SIG_topleft[1]  = origin[1] # returned value
+	taper_left_SIG_topright[1] = origin[1] # returned value
+	taper_left_SIG = gdstk.rectangle(taper_left_SIG_botleft, taper_left_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_left_SIG) # small pad
+	# left GND
+	taper_left_GND_botleft  = [ -2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_left_GND_botright = [ -2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_left_GND_topleft  = [ -2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] ]
+	taper_left_GND_topright = [ -2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] ]
+	taper_left_GND = gdstk.rectangle(taper_left_GND_botleft, taper_left_GND_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_left_GND)
+	taper_left_GND_topleft[0]  = -2*RF_PAD_PITCH - RF_PAD_size/2 # returned value
+	taper_left_GND_topright[0] = taper_left_SIG_topleft[0] - GAP_width # returned value
+	# right SIG
+	taper_right_SIG_botleft  = [ +1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_right_SIG_botright = [ +1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_right_SIG_topleft  = [ +1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length]
+	taper_right_SIG_topright = [ +1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length]
+	taper_right_SIG = gdstk.rectangle(taper_right_SIG_botleft, taper_right_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_right_SIG)
+	taper_right_SIG_topleft[0]  = +1*RF_PAD_PITCH - SIG_width/2
+	taper_right_SIG_topright[0] = +1*RF_PAD_PITCH + SIG_width/2
+	taper_right_SIG_botleft  = taper_right_SIG_topleft.copy()
+	taper_right_SIG_botright = taper_right_SIG_topright.copy()
+	taper_right_SIG_topleft[1]  = origin[1] # returned value
+	taper_right_SIG_topright[1] = origin[1] # returned value
+	taper_right_SIG = gdstk.rectangle(taper_right_SIG_botleft, taper_right_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_right_SIG) # small pad
+	# right GND
+	taper_right_GND_botleft  = [ +2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_right_GND_botright = [ +2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_right_GND_topleft  = [ +2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] ]
+	taper_right_GND_topright = [ +2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] ]
+	taper_right_GND = gdstk.rectangle(taper_right_GND_botleft, taper_right_GND_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_right_GND)
+	taper_right_GND_topleft[0]  = taper_right_SIG_topright[0] + GAP_width # returned value
+	taper_right_GND_topright[0] = +2*RF_PAD_PITCH + RF_PAD_size/2 # returned value
 	# middle GND
-	taper_middle_GND_botleft  = [ -RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_middle_GND_botright  = [ +RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_middle_GND_topright = [ +RF_PAD_size/2, origin[1] ]
-	taper_middle_GND_topleft = [ -RF_PAD_size/2, origin[1] ]
+	taper_middle_GND_botleft  = [ -RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_middle_GND_botright = [ +RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
+	taper_middle_GND_topleft  = [ -RF_PAD_size/2, origin[1]]
+	taper_middle_GND_topright = [ +RF_PAD_size/2, origin[1]]
 	taper_middle_GND = gdstk.rectangle(taper_middle_GND_botleft, taper_middle_GND_topright, layer=layer, datatype=0)
 	ret_cell.add(taper_middle_GND)
-	# left SIG
-	taper_left_SIG_botleft  = [ -1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_left_SIG_botright = [ -1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_left_SIG_topright = [ -RF_PAD_PITCH/2 - 4 - 0.5, origin[1] ]
-	taper_left_SIG_topleft  = [ -RF_PAD_PITCH/2 - 4 - 0.5 - SIG_width, origin[1] ]
-	points = [taper_left_SIG_botleft, taper_left_SIG_botright, taper_left_SIG_topright, taper_left_SIG_topleft]
-	taper_left_SIG = gdstk.Polygon(points, layer=layer, datatype=0)
-	ret_cell.add(taper_left_SIG)
-	# left GND
-	taper_left_GND_botleft  = [ -2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_left_GND_botright = [ -2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_left_GND_topright = [ taper_left_SIG_topleft[0] - GAP_width, origin[1] ]
-	taper_left_GND_topleft  = [ taper_left_SIG_topleft[0] - GAP_width - GND_width, origin[1] ]
-	points = [taper_left_GND_botleft, taper_left_GND_botright, taper_left_GND_topright, taper_left_GND_topleft]
-	taper_left_GND = gdstk.Polygon(points, layer=layer, datatype=0)
-	ret_cell.add(taper_left_GND)
-	# left SIG
-	taper_right_SIG_botleft  = [ +1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_right_SIG_botright = [ +1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_right_SIG_topright = [ +RF_PAD_PITCH/2 + 4 + 0.5 + SIG_width, origin[1] ]
-	taper_right_SIG_topleft  = [ +RF_PAD_PITCH/2 + 4 + 0.5, origin[1] ]
-	points = [taper_right_SIG_botleft, taper_right_SIG_botright, taper_right_SIG_topright, taper_right_SIG_topleft]
-	taper_right_SIG = gdstk.Polygon(points, layer=layer, datatype=0)
-	ret_cell.add(taper_right_SIG)
-	# left GND
-	taper_right_GND_botleft  = [ +2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_right_GND_botright = [ +2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_PAD_taper_length ]
-	taper_right_GND_topright = [ taper_right_SIG_topright[0] + GAP_width + GND_width, origin[1] ]
-	taper_right_GND_topleft  = [ taper_right_SIG_topright[0] + GAP_width, origin[1] ]
-	points = [taper_right_GND_botleft, taper_right_GND_botright, taper_right_GND_topright, taper_right_GND_topleft]
-	taper_right_GND = gdstk.Polygon(points, layer=layer, datatype=0)
-	ret_cell.add(taper_right_GND)
+	taper_middle_GND_topleft[0]  = taper_left_SIG_topright[0] + GAP_width # returned value
+	taper_middle_GND_topright[0] = taper_right_SIG_topleft[0] - GAP_width # returned value
 	# return point
 	ret_points = [
 		taper_left_GND_topleft, taper_left_GND_topright,
@@ -405,10 +427,10 @@ def new_RF_PAD_cell():
 	return ret_cell, ret_points
 RF_PAD_cell, RF_PAD_cell_points = new_RF_PAD_cell()
 
-# => 40.5 Ω based on sheet resistance = 27 Ω/sq
+# => 33.3 Ω based on sheet resistance = 27 Ω/sq
 def new_TIN_SERIES_TERM_cell(TIN_width=60, TIN_length=90):
 	# top pads
-	ret_cell = gdstk.Cell("TIN_SERIES_TERM_40Ohm")
+	ret_cell = gdstk.Cell("TIN_SERIES_TERM_30Ohm")
 	pad_origin = (0, 0)
 	# GSGSG pad
 	for i in range(5):
@@ -534,7 +556,7 @@ def new_TIN_SERIES_TERM_cell(TIN_width=60, TIN_length=90):
 		pad_metal = gdstk.rectangle(MET_MIDDLE_corner_botleft, MET_MIDDLE_corner_topright, layer=layer, datatype=0)
 		ret_cell.add(pad_metal)
 	return ret_cell
-TIN_SERIES_TERM_40Ohm = new_TIN_SERIES_TERM_cell()
+TIN_SERIES_TERM_30Ohm = new_TIN_SERIES_TERM_cell()
 
 
 def new_PIN_AMZM_cell(PIN_length, cell_name):
@@ -680,7 +702,7 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True):
 	TAPER_TOP_LEFT = o.copy() # savepoint for taper (top left)
 	## 2x2 MMI (bottom) right ports
 	o = [MMI_top_point[0], -MMI2x2_BOTRIGHT_CENTER[0]]
-	o = horizontal(o, RF_PAD_PITCH, layer, ret_cell) # go pad pitch first, then delay loop
+	o = horizontal(o, PIN_distance, layer, ret_cell) # go PIN distance first, then delay loop
 	o = arc_RU(o, layer, ret_cell)
 	v = np.abs(MMI2x2_BOTLEFT_CENTER[0] - MMI2x2_BOTRIGHT_CENTER[0])
 	o = vertical(o, v, layer, ret_cell)
@@ -704,7 +726,7 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True):
 	o = arc_UR(o, layer, ret_cell)
 	h = AMZM_delayloop_length / 2
 	o = horizontal(o, h, layer, ret_cell)
-	o = horizontal(o, RF_PAD_PITCH, layer, ret_cell) # go pad pitch at last
+	o = horizontal(o, PIN_distance, layer, ret_cell) # go PIN distance at last
 	MMI_bot_point_left = o.copy() # savepoint for top MMI (left port)
 	## 2x2 MMI (top) right ports
 	o = TAPER_TOP_RIGHT.copy()
@@ -739,10 +761,10 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True):
 			PAD_origin[1] - RF_PAD_size - TIN_length + TIN_contact_length
 		]
 		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_40Ohm, origin=TIN_TERM_origin))
-	# label
-	label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
-	w, h = get_cell_size(label_cell)
-	ret_cell.add(gdstk.Reference(label_cell, origin=(420-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
+	# # label
+	# label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
+	# w, h = get_cell_size(label_cell)
+	# ret_cell.add(gdstk.Reference(label_cell, origin=(420-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
 	return ret_cell, ret_o
 
 def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
@@ -776,7 +798,7 @@ def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
 	TAPER_TOP_LEFT = o.copy() # savepoint for taper (top left)
 	## 1x2 MMI (bottom) right ports
 	o = [MMI_top_point[0], -MMI1x2_TOPRIGHT_CENTER[0]]
-	o = horizontal(o, RF_PAD_PITCH, layer, ret_cell) # go pad pitch first, then delay loop
+	o = horizontal(o, PIN_distance, layer, ret_cell) # go PIN distance at last
 	o = arc_RU(o, layer, ret_cell)
 	v = np.abs(MMI1x2_TOPLEFT_CENTER[0] - MMI1x2_TOPRIGHT_CENTER[0])
 	o = vertical(o, v, layer, ret_cell)
@@ -800,7 +822,7 @@ def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
 	o = arc_UR(o, layer, ret_cell)
 	h = AMZM_delayloop_length / 2
 	o = horizontal(o, h, layer, ret_cell)
-	o = horizontal(o, RF_PAD_PITCH, layer, ret_cell) # go pad pitch at last
+	o = horizontal(o, PIN_distance, layer, ret_cell) # go PIN distance at last
 	MMI_bot_point_left = o.copy() # savepoint for top MMI (left port)
 	## 1x2 MMI (top) right ports
 	o = TAPER_TOP_RIGHT.copy()
@@ -838,7 +860,7 @@ def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
 	# label
 	label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
 	w, h = get_cell_size(label_cell)
-	ret_cell.add(gdstk.Reference(label_cell, origin=(420-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
+	ret_cell.add(gdstk.Reference(label_cell, origin=(525-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
 	return ret_cell, ret_o
 
 def PIN_structure(PIN_length, start_point, cell_name):
@@ -1539,7 +1561,7 @@ def PINL50GC_03_route_cell(origin, end_o, layer, cell_name):
 	h = -125 - 13.36 # arbitrary value
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_LU(o, layer, ret_cell)
-	v = 100 + 98.008 # arbitrary value
+	v = 250 + 1.008 # arbitrary value
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_UL(o, layer, ret_cell)
 	h = -100 # arbitrary value
@@ -1555,7 +1577,7 @@ def PINL50GC_03_route_cell(origin, end_o, layer, cell_name):
 	]
 	o = arc_UL(o, layer, ret_cell)
 	o = arc_LD(o, layer, ret_cell)
-	v = -13 # arbitrary value
+	v = - 66 # arbitrary value
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DL(o, layer, ret_cell)
 	h = -100 - 0.06 # arbitrary value

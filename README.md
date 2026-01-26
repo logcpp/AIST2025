@@ -1,6 +1,6 @@
 # AIST 2025 GDS design
 created on: 2026/01/10
-last change: 2026/01/18
+last change: 2026/01/27
 
 ## Checkpoints
 - FlexPath(..., tolerance=1e-3)
@@ -16,6 +16,7 @@ last change: 2026/01/18
 - dicing line 35~50 um width, including polishing length
 - remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space
 - NODMY area for GC and micromanipulator markers
+- make sure metal pattern are not easily shorted due to Si WG below
 
 ## Test patterns
 - 50 Ohm load

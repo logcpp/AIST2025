@@ -103,13 +103,13 @@ pin_mzm_L200, pin_mzm_L200_end_o = lib.new_PIN_AMZM_cell(200, "CR_PINL200AMZ")
 pin_mzm_L500, pin_mzm_L500_end_o = lib.new_PIN_AMZM_cell(500, "CR_PINL500AMZ")
 top_cell.add(gdstk.Reference(pin_mzm_L200, origin=PINL200_01_origin, rotation=np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L500, origin=PINL500_01_origin, rotation=np.pi/2))
-PINL100TERM_02_origin = [o[0]- 250 + 1.2, o[1]+ 860 - 6.768,]
-PINL200TERM_02_origin = [o[0]+ 360 + 1.2 - 3, o[1]+ 860 - 6.768,]
-pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(100, "CR_PINL100AMZ_TERM")
-pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL200AMZ_TERM")
+PINL100TERM_02_origin = [o[0]- 250 + 1.2, o[1]+ 910 + 3 - 6.768,]
+PINL200TERM_02_origin = [o[0]+ 360 + 1.2 - 3, o[1]+ 910 + 3 - 6.768,]
+pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL100AMZ_TERM")
+pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL200AMZ_TERM", with_TERM=False)
 top_cell.add(gdstk.Reference(pin_mzm_L100_TERM, origin=PINL100TERM_02_origin, rotation=-np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L200_TERM, origin=PINL200TERM_02_origin, rotation=-np.pi/2))
-PINL50GC_03_origin = [o[0] + 500 + 8.2, o[1]+ 202 - 0.08]
+PINL50GC_03_origin = [o[0] + 500 + 8.2, o[1]+ 255 - 0.08]
 pin_mzm_L50_GC, pin_mzm_L50_GC_end_o = lib.new_PIN_AMZM_GC_cell(50, "CR_PINL50AMZ_GC")
 top_cell.add(gdstk.Reference(pin_mzm_L50_GC, origin=PINL50GC_03_origin, rotation=-np.pi/2))
 

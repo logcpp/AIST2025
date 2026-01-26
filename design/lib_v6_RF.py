@@ -40,8 +40,8 @@ SIG_width = 10
 GND_width = 50
 GAP_width = 9
 RF_PAD_size = RF_PAD_PITCH - GAP_width
-RF_GND_taper_length = 20
-RF_SIG_taper_length = 20 - GAP_width
+RF_GND_taper_length = 45
+RF_SIG_taper_length = RF_GND_taper_length - GAP_width
 RF_PAD_taper_end = 30.5
 
 def get_cell_size(cell):
@@ -90,9 +90,15 @@ def new_RF_PAD_cell():
 	taper_left_SIG_topleft  = [ -1*RF_PAD_PITCH - RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length ]
 	taper_left_SIG_topright = [ -1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length ]
 	taper_left_SIG = gdstk.rectangle(taper_left_SIG_botleft, taper_left_SIG_topright, layer=layer, datatype=0)
-	ret_cell.add(taper_left_SIG)
-	taper_left_SIG_topleft[0]  = -1*RF_PAD_PITCH - SIG_width/2 # returned value
-	taper_left_SIG_topright[0] = -1*RF_PAD_PITCH + SIG_width/2 # returned value
+	ret_cell.add(taper_left_SIG) # large pad
+	taper_left_SIG_topleft[0]  = -1*RF_PAD_PITCH - SIG_width/2
+	taper_left_SIG_topright[0] = -1*RF_PAD_PITCH + SIG_width/2
+	taper_left_SIG_botleft  = taper_left_SIG_topleft.copy()
+	taper_left_SIG_botright = taper_left_SIG_topright.copy()
+	taper_left_SIG_topleft[1]  = origin[1] # returned value
+	taper_left_SIG_topright[1] = origin[1] # returned value
+	taper_left_SIG = gdstk.rectangle(taper_left_SIG_botleft, taper_left_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_left_SIG) # small pad
 	# left GND
 	taper_left_GND_botleft  = [ -2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
 	taper_left_GND_botright = [ -2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
@@ -109,8 +115,14 @@ def new_RF_PAD_cell():
 	taper_right_SIG_topright = [ +1*RF_PAD_PITCH + RF_PAD_size/2, origin[1] + RF_SIG_taper_length - RF_GND_taper_length]
 	taper_right_SIG = gdstk.rectangle(taper_right_SIG_botleft, taper_right_SIG_topright, layer=layer, datatype=0)
 	ret_cell.add(taper_right_SIG)
-	taper_right_SIG_topleft[0]  = +1*RF_PAD_PITCH - SIG_width/2 # returned value
-	taper_right_SIG_topright[0] = +1*RF_PAD_PITCH + SIG_width/2 # returned value
+	taper_right_SIG_topleft[0]  = +1*RF_PAD_PITCH - SIG_width/2
+	taper_right_SIG_topright[0] = +1*RF_PAD_PITCH + SIG_width/2
+	taper_right_SIG_botleft  = taper_right_SIG_topleft.copy()
+	taper_right_SIG_botright = taper_right_SIG_topright.copy()
+	taper_right_SIG_topleft[1]  = origin[1] # returned value
+	taper_right_SIG_topright[1] = origin[1] # returned value
+	taper_right_SIG = gdstk.rectangle(taper_right_SIG_botleft, taper_right_SIG_topright, layer=layer, datatype=0)
+	ret_cell.add(taper_right_SIG) # small pad
 	# right GND
 	taper_right_GND_botleft  = [ +2*RF_PAD_PITCH - RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
 	taper_right_GND_botright = [ +2*RF_PAD_PITCH + RF_PAD_size/2, origin[1] - RF_GND_taper_length ]
@@ -305,7 +317,6 @@ def new_CPW_cell(CPW_length, cell_name):
 	taper_right_GND_topleft   = RF_PAD_cell_points[8]
 	taper_right_GND_topright  = RF_PAD_cell_points[9]
 	# CPW waveguide
-	SIG_taper_additional = 2*(RF_GND_taper_length - RF_SIG_taper_length)
 	## left GND
 	gnd_line_left_corner_botleft  = [ taper_left_GND_topleft[0], taper_left_GND_topleft[1] ]
 	gnd_line_left_corner_topright = [ taper_left_GND_topright[0], CPW_length + taper_left_GND_topright[1] ]
@@ -313,7 +324,7 @@ def new_CPW_cell(CPW_length, cell_name):
 	ret_cell.add(gnd_line_left)
 	## left SIG
 	sig_line_left_corner_botleft  = [ taper_left_SIG_topleft[0], taper_left_SIG_topleft[1] ]
-	sig_line_left_corner_topright = [ taper_left_SIG_topright[0], SIG_taper_additional + CPW_length + taper_left_SIG_topright[1] ]
+	sig_line_left_corner_topright = [ taper_left_SIG_topright[0], CPW_length + taper_left_SIG_topright[1] ]
 	sig_line_left = gdstk.rectangle(sig_line_left_corner_botleft, sig_line_left_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_left)
 	## middle GND
@@ -323,7 +334,7 @@ def new_CPW_cell(CPW_length, cell_name):
 	ret_cell.add(gnd_line_middle)
 	## right SIG
 	sig_line_right_corner_botleft  = [ taper_right_SIG_topleft[0], taper_right_SIG_topleft[1] ]
-	sig_line_right_corner_topright = [ taper_right_SIG_topright[0], SIG_taper_additional + CPW_length + taper_right_SIG_topright[1] ]
+	sig_line_right_corner_topright = [ taper_right_SIG_topright[0], CPW_length + taper_right_SIG_topright[1] ]
 	sig_line_right = gdstk.rectangle(sig_line_right_corner_botleft, sig_line_right_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_right)
 	## right GND
@@ -354,11 +365,6 @@ def new_Short_cell(length, cell_name):
 	ret_cell.add(gdstk.Reference(RF_PAD_cell, origin=(0,0)))
 	SIG_GND_gap = RF_GND_taper_length - RF_SIG_taper_length
 	ret_cell.add(
-		# fill SIG-GND gaps
-		gdstk.rectangle([-1*RF_PAD_PITCH-RF_PAD_size/2, taper_left_SIG_topleft[1]], [-1*RF_PAD_PITCH+RF_PAD_size/2, taper_left_SIG_topright[1]+SIG_GND_gap], layer=LAYER_MET, datatype=0),
-		gdstk.rectangle([+1*RF_PAD_PITCH-RF_PAD_size/2, taper_left_SIG_topleft[1]], [+1*RF_PAD_PITCH+RF_PAD_size/2, taper_left_SIG_topright[1]+SIG_GND_gap], layer=LAYER_MET, datatype=0),
-		gdstk.rectangle([-1*RF_PAD_PITCH-RF_PAD_size/2, taper_left_SIG_topleft[1]+SIG_GND_gap+length], [-1*RF_PAD_PITCH+RF_PAD_size/2, taper_left_SIG_topright[1]+SIG_GND_gap+length+SIG_GND_gap], layer=LAYER_MET, datatype=0),
-		gdstk.rectangle([+1*RF_PAD_PITCH-RF_PAD_size/2, taper_left_SIG_topleft[1]+SIG_GND_gap+length], [+1*RF_PAD_PITCH+RF_PAD_size/2, taper_left_SIG_topright[1]+SIG_GND_gap+length+SIG_GND_gap], layer=LAYER_MET, datatype=0),
 		# middle metal
 		gdstk.rectangle(taper_left_GND_topleft, [taper_right_GND_topright[0],taper_right_GND_topright[1]+length], layer=LAYER_MET, datatype=0)
 	)
@@ -424,23 +430,23 @@ def new_Load_cell(length, cell_name):
 	taper_right_GND_topleft   = RF_PAD_cell_points[8]
 	taper_right_GND_topright  = RF_PAD_cell_points[9]
 	## TiN (left)
-	TIN_width = 10 # um
-	TIN_length = 37 # um => ~100 Ohm
-	contact_width = 5
-	contact_length = 5
-	gap = (TIN_width - contact_width) / 2
+	TIN_width = 12 # um
+	TIN_length = 33 # um => ~74.25 Ω (Rs=27 Ω/sq) + contact resistance 16.3*1.5 Ω
+	contact_width = 7
+	contact_length = 7
+	gap = (TIN_width - contact_length)/2
 	def TIN_load_cell(cell_name):
 		ret_cell = gdstk.Cell(cell_name)
 		TIN_corner_botleft = [
 			-1*TIN_length - 0.5 * contact_width - gap,
-			-0.5 * contact_width - gap,
+			-0.5 * contact_length - gap,
 		]
 		TIN_corner_topright = [
 			1*TIN_length + 0.5 * contact_width + gap,
-			TIN_width - 0.5 * contact_width - gap,
+			TIN_width - 0.5 * contact_length - gap,
 		]
 		ret_cell.add( gdstk.rectangle(TIN_corner_botleft, TIN_corner_topright, layer=LAYER_TIN, datatype=0))
-		# left
+		# left contact
 		contact_left_corner_botleft = [
 			-1*TIN_length - 0.5 * contact_width,
 			TIN_corner_botleft[1] + gap,
@@ -450,7 +456,7 @@ def new_Load_cell(length, cell_name):
 			contact_left_corner_botleft[1] + contact_length,
 		]
 		ret_cell.add( gdstk.rectangle(contact_left_corner_botleft, contact_left_corner_topright, layer=LAYER_CT2TIN, datatype=0))
-		# middle
+		# middle contact
 		contact_right_corner_botleft = [
 			0*TIN_length - 0.5 * contact_width,
 			TIN_corner_botleft[1] + gap,
@@ -462,7 +468,7 @@ def new_Load_cell(length, cell_name):
 		ret_cell.add(
 			gdstk.rectangle(contact_right_corner_botleft, contact_right_corner_topright, layer=LAYER_CT2TIN, datatype=0)
 		)
-		# right
+		# right contact
 		contact_right_corner_botleft = [
 			1*TIN_length - 0.5 * contact_width,
 			TIN_corner_botleft[1] + gap,
@@ -485,7 +491,6 @@ def new_Load_cell(length, cell_name):
 		gdstk.Reference( TIN_cell, origin=[ (taper_right_SIG_topleft[0] + taper_right_SIG_topright[0]) / 2, length - TIN_width/2]),
 	)
 	# CPW waveguide
-	SIG_taper_additional = 1*(RF_GND_taper_length - RF_SIG_taper_length)
 	ret_cell.add(gdstk.Reference(RF_PAD_cell, origin=(0,0)))
 	## left GND
 	gnd_line_left_corner_botleft  = [ taper_left_GND_topleft[0], taper_left_GND_topleft[1] ]
@@ -498,7 +503,7 @@ def new_Load_cell(length, cell_name):
 	sig_line_left = gdstk.rectangle(sig_line_left_corner_botleft, sig_line_left_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_left)
 	sig_line_left_corner_botleft  = [ taper_left_SIG_topleft[0], length - TIN_width ]
-	sig_line_left_corner_topright = [ taper_left_SIG_topright[0], length + SIG_taper_additional]
+	sig_line_left_corner_topright = [ taper_left_SIG_topright[0], length]
 	sig_line_left = gdstk.rectangle(sig_line_left_corner_botleft, sig_line_left_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_left)
 	## middle GND
@@ -512,7 +517,7 @@ def new_Load_cell(length, cell_name):
 	sig_line_right = gdstk.rectangle(sig_line_right_corner_botleft, sig_line_right_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_right)
 	sig_line_right_corner_botleft  = [ taper_right_SIG_topleft[0], length - TIN_width]
-	sig_line_right_corner_topright = [ taper_right_SIG_topright[0], length + SIG_taper_additional]
+	sig_line_right_corner_topright = [ taper_right_SIG_topright[0], length]
 	sig_line_left = gdstk.rectangle(sig_line_right_corner_botleft, sig_line_right_corner_topright, layer=LAYER_MET, datatype=0)
 	ret_cell.add(sig_line_left)
 	## right GND
@@ -694,4 +699,4 @@ def new_label_cell(text, cell_name, layer=LAYER_MET):
 # top_cell.add(gdstk.Reference(LABEL_LAYER41, origin=LABEL_LAYER41_origin))
 
 # LIB.add(top_cell, *top_cell.dependencies(True))
-# LIB.write_gds("RF_calib_pattern_v3.gds")
+# LIB.write_gds("RF_calib_pattern_v4.gds")
