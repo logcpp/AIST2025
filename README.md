@@ -1,6 +1,6 @@
 # AIST 2025 GDS design
 created on: 2026/01/10
-last change: 2026/01/27
+last change: 2026/01/30
 
 ## Checkpoints
 - FlexPath(..., tolerance=1e-3)
@@ -17,6 +17,9 @@ last change: 2026/01/27
 - remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space
 - NODMY area for GC and micromanipulator markers
 - make sure metal pattern are not easily shorted due to Si WG below
+- check equivalent CPW impedance of RF pads
+- check all resistance are estimated correctly
+- check CPW impedance is estimated correctly
 
 ## Test patterns
 - 50 Ohm load
@@ -33,6 +36,7 @@ last change: 2026/01/27
 - SSC to GC (Ren) w/ NODMY
 - 1x2 MMI test pattern
 - PIN loss test pattern (for ring, MZM) -> maybe with GC-GC ports
+- TiN resistors of different sizes
 
 ## Experiments to do
 - PIN MZM measurement
@@ -43,3 +47,4 @@ last change: 2026/01/27
 - GC 4x4 in -> SLM -> PD? (MVM)
 - RF SOLT calibration
 - RF Thru L/2L (L=1.0mm) de-embedding
+- TiN resistance measurement
