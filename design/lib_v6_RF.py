@@ -609,10 +609,10 @@ def new_Thru_cell(length, cell_name):
 	ret_cell = gdstk.Cell(cell_name)
 	CPW_cell = new_CPW_cell(length+1, cell_name+"_CPW")
 	ret_cell.add(gdstk.Reference(CPW_cell, origin=(0,0)))
-	# label
-	label_cell = new_label_cell(f"T", cell_name+"_label", layer=LAYER_MET)
-	w, h = get_cell_size(label_cell)
-	ret_cell.add(gdstk.Reference(label_cell, origin=(RF_PAD_PITCH*2-h/2,RF_GND_taper_length+length/2-w/2), rotation=-np.pi/2))
+	# # label
+	# label_cell = new_label_cell(f"T", cell_name+"_label", layer=LAYER_MET)
+	# w, h = get_cell_size(label_cell)
+	# ret_cell.add(gdstk.Reference(label_cell, origin=(RF_PAD_PITCH*2-h/2,RF_GND_taper_length+length/2-w/2), rotation=-np.pi/2))
 	return ret_cell
 
 def new_label_cell(text, cell_name, layer=LAYER_MET):

@@ -92,7 +92,7 @@ top_cell.add(
 	# middle
 	gdstk.Reference(Mani_marker_cell, origin=[900, 5150]),
 	# bot right
-	gdstk.Reference(Mani_marker_cell, origin=[4680, 4000]),
+	gdstk.Reference(Mani_marker_cell, origin=[4700, 4000]),
 )
 
 #---------- MZM test patterns ----------#

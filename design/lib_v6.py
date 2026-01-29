@@ -33,7 +33,7 @@ dicing_length = 50     # dicing area length, one-side (um)
 ssc_width_small = 0.16 # ssc small width (um)
 ssc_length = 100       # ssc length (um)
 ssc_pitch = 127        # ssc pitch (um)
-label_size = 50        # label text size (um)
+label_size = 80        # label text size (um)
 
 RF_PAD_PITCH = 125
 RF_PAD_GAP = 9
@@ -667,7 +667,7 @@ def new_PIN_AMZM_cell(PIN_length, cell_name):
 	# label
 	label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
 	w, h = get_cell_size(label_cell)
-	ret_cell.add(gdstk.Reference(label_cell, origin=(-235-h/2, 120+PIN_length/2-w/2), rotation=-np.pi/2))
+	ret_cell.add(gdstk.Reference(label_cell, origin=(-250-h/2, 175+PIN_length/2-w/2), rotation=-np.pi/2))
 	return ret_cell, ret_o
 
 def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True):
@@ -760,7 +760,7 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True):
 			PAD_origin[0],
 			PAD_origin[1] - RF_PAD_size - TIN_length + TIN_contact_length
 		]
-		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_40Ohm, origin=TIN_TERM_origin))
+		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_30Ohm, origin=TIN_TERM_origin))
 	# # label
 	# label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
 	# w, h = get_cell_size(label_cell)
@@ -856,11 +856,11 @@ def new_PIN_AMZM_GC_cell(PIN_length, cell_name, with_TERM=False):
 			PAD_origin[0],
 			PAD_origin[1] - RF_PAD_size - TIN_length + TIN_contact_length
 		]
-		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_40Ohm, origin=TIN_TERM_origin))
+		ret_cell.add(gdstk.Reference(TIN_SERIES_TERM_30Ohm, origin=TIN_TERM_origin))
 	# label
 	label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
 	w, h = get_cell_size(label_cell)
-	ret_cell.add(gdstk.Reference(label_cell, origin=(525-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
+	ret_cell.add(gdstk.Reference(label_cell, origin=(560-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
 	return ret_cell, ret_o
 
 def PIN_structure(PIN_length, start_point, cell_name):
@@ -1137,6 +1137,9 @@ def TIN_structure(TIN_length, TIN_width, start_point, cell_name):
 
 def new_label_cell(text, cell_name, size=label_size, layer=LAYER_MET):
 	ret_cell = gdstk.Cell(cell_name)
+	# replace error characters
+	text = text.replace('0', 'O')
+	# replace error characters
 	text = gdstk.text(text, size, (0,0), layer=layer, datatype=0)
 	ret_cell.add(*text)
 	return ret_cell
@@ -1861,7 +1864,7 @@ def passive_test_patterns(origin, ssc_right, loop_right, GC_cell, cell_name):
 	ret_cell.add(gdstk.Reference(GC_cell_woNODMY, origin=o, rotation=-np.pi))
 	#----- LAYER_MET = 36 -----#
 	# label
-	size = 30
+	size = label_size
 	label_index = 0
 	o = [
 		origin[0],
@@ -1873,7 +1876,9 @@ def passive_test_patterns(origin, ssc_right, loop_right, GC_cell, cell_name):
 			o[0] - dicing_length - ssc_length,
 			o[1] + 10 + label_index*ssc_pitch
 		]
-		text = gdstk.text(f"{label_index}U", size, pos, layer=LAYER_MET)
+		text = f"{label_index}"
+		text = text.replace('0', 'O')
+		text = gdstk.text(text, size, pos, layer=LAYER_MET)
 		ret_cell.add(*text)
 		label_index += 1
 	# 1x2 MMI
@@ -1882,9 +1887,11 @@ def passive_test_patterns(origin, ssc_right, loop_right, GC_cell, cell_name):
 			o[0] - dicing_length - ssc_length,
 			o[1] + 10 + label_index*ssc_pitch
 		]
-		if   j == 0: text = f"{label_index}o"
-		elif j == 1: text = f"{label_index}iR"
-		elif j == 2: text = f"{label_index}iL"
+		# if   j == 0: text = f"{label_index}o"
+		# elif j == 1: text = f"{label_index}iR"
+		# elif j == 2: text = f"{label_index}iL"
+		text = f"{label_index}"
+		text = text.replace('0', 'O')
 		text = gdstk.text(text, size, pos, layer=LAYER_MET)
 		ret_cell.add(*text)
 		label_index += 1
@@ -1894,7 +1901,9 @@ def passive_test_patterns(origin, ssc_right, loop_right, GC_cell, cell_name):
 			o[0] - dicing_length - ssc_length,
 			o[1] + 10 + label_index*ssc_pitch
 		]
-		text = gdstk.text(f"{label_index}U", size, pos, layer=LAYER_MET)
+		text = f"{label_index}"
+		text = text.replace('0', 'O')
+		text = gdstk.text(text, size, pos, layer=LAYER_MET)
 		ret_cell.add(*text)
 		label_index += 1
 	return ret_cell
@@ -1912,7 +1921,7 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 		ssc_right_origin[0] + 10,
 		ssc_right_origin[1] + dicing_length + ssc_length
 	]
-	size = 30
+	size = label_size
 	#----- LAYER_MET = 36 -----#
 	label_index = 0
 	# loop back
@@ -1921,9 +1930,9 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		label_cell = new_label_cell(f"{label_index}U", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		label_cell = new_label_cell(f"{label_index}", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# AMZM-L200-TERM (top right)
@@ -1932,12 +1941,13 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		if   j == 0: text = f"{label_index}TRo"
-		elif j == 1: text = f"{label_index}TRiR"
-		elif j == 2: text = f"{label_index}TRiL"
+		text = f"{label_index}"
+		# if   j == 0: text = f"{label_index}TRo"
+		# elif j == 1: text = f"{label_index}TRiR"
+		# elif j == 2: text = f"{label_index}TRiL"
 		label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# AMZM-L100-TERM (top left)
@@ -1946,12 +1956,13 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		if   j == 0: text = f"{label_index}TLo"
-		elif j == 1: text = f"{label_index}TLiR"
-		elif j == 2: text = f"{label_index}TLiL"
+		text = f"{label_index}"
+		# if   j == 0: text = f"{label_index}TLo"
+		# elif j == 1: text = f"{label_index}TLiR"
+		# elif j == 2: text = f"{label_index}TLiL"
 		label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# AMZM-L200 (bot right)
@@ -1960,12 +1971,13 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		if   j == 0: text = f"{label_index}BRo"
-		elif j == 1: text = f"{label_index}BRiR"
-		elif j == 2: text = f"{label_index}BRiL"
+		text = f"{label_index}"
+		# if   j == 0: text = f"{label_index}BRo"
+		# elif j == 1: text = f"{label_index}BRiR"
+		# elif j == 2: text = f"{label_index}BRiL"
 		label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# AMZM-L100 (bot left)
@@ -1974,12 +1986,13 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		if   j == 0: text = f"{label_index}BLo"
-		elif j == 1: text = f"{label_index}BLiR"
-		elif j == 2: text = f"{label_index}BLiL"
+		text = f"{label_index}"
+		# if   j == 0: text = f"{label_index}BLo"
+		# elif j == 1: text = f"{label_index}BLiR"
+		# elif j == 2: text = f"{label_index}BLiL"
 		label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# loop back
@@ -1988,9 +2001,9 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		label_cell = new_label_cell(f"{label_index}U", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		label_cell = new_label_cell(f"{label_index}", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	# GC 4x1 output
@@ -1999,18 +2012,20 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		text = f"{label_index}G4"
+		text = f"{label_index}"
 		label_origin = pos
 		number_origin = (0, size)
-		if i == 0:
-			text += "B" # bottom
+		# if i == 0:
+			# text += "B" # bottom
 		if i == 3:
-			text += "T" # top
-			label_origin = [pos[0] - 70 + 2.5, pos[1]] # to avoid dicing line
-			number_origin = (0, size - 9)
+			label_index += 1
+			continue
+			# text += "T" # top
+			# label_origin = [pos[0] - 70 + 2.5, pos[1]] # to avoid dicing line
+			# number_origin = (0, size - 9)
 		label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, number_origin, layer=LAYER_MET)
-		label_cell.add(*number)
+		# number = gdstk.text(port_number(label_index), size, number_origin, layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=label_origin, rotation=-np.pi/2))
 		label_index += 1
 	# GC 4x4 array
@@ -2020,15 +2035,15 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 				o[0] - label_index*ssc_pitch,
 				o[1]
 			]
-			text = f"{label_index}G16"
+			text = f"{label_index}"
 			label_origin = pos
-			if j == 0:
-				text += "L" # left
-			if j == 3:
-				text += "R" # right
+			# if j == 0:
+				# text += "L" # left
+			# if j == 3:
+				# text += "R" # right
 			label_cell = new_label_cell(text, cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-			number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-			label_cell.add(*number)
+			# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+			# label_cell.add(*number)
 			ret_cell.add(gdstk.Reference(label_cell, origin=label_origin, rotation=-np.pi/2))
 			label_index += 1
 	# loop back
@@ -2037,9 +2052,9 @@ def new_ssc_labels_cell(ssc_right_origin, cell_name):
 			o[0] - label_index*ssc_pitch,
 			o[1]
 		]
-		label_cell = new_label_cell(f"{label_index}U", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
-		number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
-		label_cell.add(*number)
+		label_cell = new_label_cell(f"{label_index}", cell_name+f"_{label_index}", size=size, layer=LAYER_MET)
+		# number = gdstk.text(port_number(label_index), size, (0,size), layer=LAYER_MET)
+		# label_cell.add(*number)
 		ret_cell.add(gdstk.Reference(label_cell, origin=pos, rotation=-np.pi/2))
 		label_index += 1
 	return ret_cell
