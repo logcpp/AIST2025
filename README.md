@@ -34,6 +34,7 @@ last change: 2026/01/30
 - GC to GC B2B test port
 - SSC to GC (Ren) w/o NODMY
 - SSC to GC (Ren) w/ NODMY
+- SSC to GC (AIST)
 - 1x2 MMI test pattern
 - PIN loss test pattern (for ring, MZM) -> maybe with GC-GC ports
 - TiN resistors of different sizes

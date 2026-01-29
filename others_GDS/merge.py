@@ -12,11 +12,11 @@ CHIP_WIDTH = 5000
 CHIP_HEIGHT = 10000
 
 AIST_MPW_LIB = gdstk.read_gds("../MPW_Cell/MPW_Cell_5x10.gds")
-JIANG_LIB = gdstk.read_gds("../others_GDS/Jiang_20260126.gds")
-SHERRY_LIB_1 = gdstk.read_gds("../others_GDS/Sherry_20260126_1.gds")
-SHERRY_LIB_2 = gdstk.read_gds("../others_GDS/Sherry_20260126_2_2.gds")
-SUGANUMA_LIB = gdstk.read_gds("../others_GDS/20260126_SUGANUMA.gds")
-REN_LIB = gdstk.read_gds("../design/AIST2025_CR_v6.gds")
+JIANG_LIB = gdstk.read_gds("../others_GDS/Jiang_20260128.gds")
+SHERRY_LIB_1 = gdstk.read_gds("../others_GDS/Sherry_20260130_1.gds")
+SHERRY_LIB_2 = gdstk.read_gds("../others_GDS/Sherry_20260130_2.gds")
+SUGANUMA_LIB = gdstk.read_gds("../others_GDS/20260128_SUGANUMA_main.gds")
+REN_LIB = gdstk.read_gds("../design/AIST2025_CR_v7.gds")
 
 AIST_MPW_LIB.rename_cell("MPW_cell", "BASE")
 JIANG_LIB.rename_cell("Top_Final_All_Loops", "Jiang")
