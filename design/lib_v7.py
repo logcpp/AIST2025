@@ -1349,30 +1349,37 @@ def S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset, dh=0, skip=0):
 		o = horizontal(o, h, layer, ret_cell)
 		o = arc_RD(o, layer, ret_cell)
 		o = arc_DR(o, layer, ret_cell)
-	if wg_offset > 6 and skip < 2:
-		h = ssc_pitch * 4 - 2*(2*radius+dr)
-		o = horizontal(o, h, layer, ret_cell)
-		o = arc_RD(o, layer, ret_cell)
-		o = arc_DR(o, layer, ret_cell)
-	if wg_offset > 10 and skip < 3:
-		h = ssc_pitch * 4 - 2*(2*radius+dr)
-		o = horizontal(o, h, layer, ret_cell)
-		o = arc_RD(o, layer, ret_cell)
-		o = arc_DR(o, layer, ret_cell)
-	if wg_offset > 14 and skip < 4:
-		h = ssc_pitch * 4 - 2*(2*radius+dr)
-		o = horizontal(o, h, layer, ret_cell)
-		o = arc_RD(o, layer, ret_cell)
-		o = arc_DR(o, layer, ret_cell)
-	if wg_offset > 18 and skip < 5:
-		h = ssc_pitch * 4 - 2*(2*radius+dr)
-		o = horizontal(o, h, layer, ret_cell)
-		o = arc_RD(o, layer, ret_cell)
-		o = arc_DR(o, layer, ret_cell)
+	# if wg_offset > 6 and skip < 2:
+		# h = ssc_pitch * 4 - 2*(2*radius+dr)
+		# o = horizontal(o, h, layer, ret_cell)
+		# o = arc_RD(o, layer, ret_cell)
+		# o = arc_DR(o, layer, ret_cell)
+	# if wg_offset > 10 and skip < 3:
+		# h = ssc_pitch * 4 - 2*(2*radius+dr)
+		# o = horizontal(o, h, layer, ret_cell)
+		# o = arc_RD(o, layer, ret_cell)
+		# o = arc_DR(o, layer, ret_cell)
+	# if wg_offset > 14 and skip < 4:
+		# h = ssc_pitch * 4 - 2*(2*radius+dr)
+		# o = horizontal(o, h, layer, ret_cell)
+		# o = arc_RD(o, layer, ret_cell)
+		# o = arc_DR(o, layer, ret_cell)
+	# if wg_offset > 18 and skip < 5:
+		# h = ssc_pitch * 4 - 2*(2*radius+dr)
+		# o = horizontal(o, h, layer, ret_cell)
+		# o = arc_RD(o, layer, ret_cell)
+		# o = arc_DR(o, layer, ret_cell)
+	# if wg_offset > 22 and skip < 6:
+		# h = ssc_pitch * 6 - 2*(2*radius+dr)
+		# o = horizontal(o, h, layer, ret_cell)
+		# o = arc_RD(o, layer, ret_cell)
+		# o = arc_DR(o, layer, ret_cell)
 	if wg_offset > 22 and skip < 6:
-		h = ssc_pitch * 6 - 2*(2*radius+dr)
+		h = ssc_pitch * (4+4+4+2+6) - 50
 		o = horizontal(o, h, layer, ret_cell)
 		o = arc_RD(o, layer, ret_cell)
+		v = -8*(radius+dr)
+		o = vertical(o, v, layer, ret_cell)
 		o = arc_DR(o, layer, ret_cell)
 	return o
 
@@ -1464,10 +1471,10 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 13.2
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
+	# h = 240 - 13.2
+	# o = horizontal(o, h, layer, ret_cell)
+	# o = arc_RD(o, layer, ret_cell)
+	# o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1486,10 +1493,10 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 13.2 - 16.1 - 2*(radius+dr) + wg_offset*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
+	# h = 240 - 13.2 - 16.1 - 2*(radius+dr) + wg_offset*routing_wg_pitch
+	# o = horizontal(o, h, layer, ret_cell)
+	# o = arc_RD(o, layer, ret_cell)
+	# o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1516,10 +1523,6 @@ def PINL200_01_route_cell(origin, end_o, ssc_point, layer, cell_name, right_end)
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 13.2 - 16.1 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1551,10 +1554,6 @@ def PINL100TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 35.4
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1579,10 +1578,6 @@ def PINL100TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 35.4 - 14.8 - 2*(radius+dr) + wg_offset*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1618,10 +1613,6 @@ def PINL100TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 240 - 35.4 - 14.8 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1653,10 +1644,6 @@ def PINL200TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 220 - 15.4
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1681,10 +1668,6 @@ def PINL200TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 220 - 15.4 - 29.8 - 2*(radius+dr) + wg_offset*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
@@ -1717,10 +1700,6 @@ def PINL200TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
 	### bend at SSC for better space efficiency
-	h = 220 - 15.4 - 29.8 - 2*(radius+dr) + (wg_offset-1)*routing_wg_pitch
-	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	o = arc_DR(o, layer, ret_cell)
 	dh = 0
 	o = S_shape_routing(o, layer, ret_cell, ssc_point, wg_offset+24, dh=dh, skip=2)
 	### bend at SSC for better space efficiency
