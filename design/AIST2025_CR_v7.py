@@ -90,7 +90,7 @@ top_cell.add(
 		columns=1, rows=2, spacing=Mani_marker_pitch
 	),
 	# middle
-	gdstk.Reference(Mani_marker_cell, origin=[900, 5150]),
+	gdstk.Reference(Mani_marker_cell, origin=[1000, 5200]),
 	# bot right
 	gdstk.Reference(Mani_marker_cell, origin=[4700, 4000]),
 )
@@ -103,10 +103,10 @@ pin_mzm_L200, pin_mzm_L200_end_o = lib.new_PIN_AMZM_cell(200, "CR_PINL200AMZ")
 pin_mzm_L500, pin_mzm_L500_end_o = lib.new_PIN_AMZM_cell(500, "CR_PINL500AMZ")
 top_cell.add(gdstk.Reference(pin_mzm_L200, origin=PINL200_01_origin, rotation=np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L500, origin=PINL500_01_origin, rotation=np.pi/2))
-PINL100TERM_02_origin = [o[0]- 250 + 1.2 - 34, o[1] + 906.232 ]
+PINL100TERM_02_origin = [o[0]- 250 - 83.366, o[1] + 900 - 160.384 + 1]
 PINL200TERM_02_origin = [o[0]+ 110 + 1.2 + 23, o[1] + 906.232]
-pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL100AMZ_TERM")
-pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_TERM_cell(200, "CR_PINL200AMZ_TERM", with_TERM=False)
+pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_CPW_TERM_cell(200, "CR_PINL100AMZ_TERM")
+pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_CPW_cell(200, "CR_PINL200AMZ_TERM", with_TERM=False)
 top_cell.add(gdstk.Reference(pin_mzm_L100_TERM, origin=PINL100TERM_02_origin, rotation=-np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L200_TERM, origin=PINL200TERM_02_origin, rotation=-np.pi/2))
 PINL50GC_03_origin = [o[0] + 550 + 8.2, o[1] + 880.92]
@@ -198,14 +198,14 @@ Open_01  = lib_RF.new_Open_cell(50, "OPEN_L50um")
 Load_01  = lib_RF.new_Load_cell(50, "LOAD_L50um")
 Thru_01  = lib_RF.new_Thru_cell(50, "THRU_L50um")
 
-CPW_o = [300, 3500+1500+10]
+CPW_o = [350, 3500+1500+11]
 
-CPW1L_01_origin = [CPW_o[0]+1000, CPW_o[1]+3800 - 46]
+CPW1L_01_origin = [CPW_o[0]+ 950, CPW_o[1]+3800 - 46]
 CPW2L_01_origin = [CPW_o[0]+ 170, CPW_o[1]+1436 + 35]
 Short_01_origin = [CPW_o[0]+ 170, CPW_o[1]+908 + 141]
 Open_01_origin  = [CPW_o[0]+ 170, CPW_o[1]+528 + 99]
 Load_01_origin  = [CPW_o[0]+ 170, CPW_o[1]+128 + 77]
-Thru_01_origin  = [CPW_o[0]+1000, CPW_o[1]-940]
+Thru_01_origin  = [1300, 4070]
 
 top_cell.add(gdstk.Reference(CPW2L_01, origin=CPW2L_01_origin))
 top_cell.add(gdstk.Reference(CPW1L_01, origin=CPW1L_01_origin))

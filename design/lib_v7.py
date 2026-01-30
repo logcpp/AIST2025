@@ -815,7 +815,7 @@ def new_PIN_AMZM_cell(PIN_length, cell_name):
 	ret_cell.add(gdstk.Reference(label_cell, origin=(-250-h/2, 175+PIN_length/2-w/2), rotation=-np.pi/2))
 	return ret_cell, ret_o
 
-def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True, with_end_pad=False):
+def new_PIN_AMZM_CPW_cell(PIN_length, cell_name, with_TERM=False, with_end_pad=False):
 	# connection points for use
 	MZM_BOTLEFT_CENTER = [0.0, +0.55]
 	MZM_BOTRIGHT_CENTER = [0.0, -0.55]
@@ -889,10 +889,123 @@ def new_PIN_AMZM_TERM_cell(PIN_length, cell_name, with_TERM=True, with_end_pad=F
 	]
 	ret_cell.add(gdstk.Reference(AIST_PDK["AIST_MMI_2x2"], origin=o, rotation=-np.pi/2)); o[0] += MMI2x2_TOPLEFT_CENTER[1]
 	ret_o = o.copy()
-	## PAD cell
+	## CPW cell
 	SIG_GND_line_length = PIN_length + 1
 	if with_TERM:
 		thermal_isolation_length = 100
+		PAD_cell, PAD_end_o = new_CPW_TERM_cell(SIG_GND_line_length, thermal_isolation_length, cell_name+"_PAD", with_end_pad=with_end_pad)
+		PAD_origin = [
+			(TAPER_BOT_LEFT[0]+TAPER_BOT_RIGHT[0])/2,
+			(TAPER_BOT_LEFT[1]+TAPER_BOT_RIGHT[1])/2 + RF_PAD_taper_end - PAD_end_o[1]
+		]
+		ret_cell.add(gdstk.Reference(PAD_cell, origin=PAD_origin))
+	else:
+		PAD_cell = new_CPW_cell(SIG_GND_line_length, cell_name+"_PAD", with_end_pad=with_end_pad)
+		PAD_origin = [
+			(TAPER_BOT_LEFT[0]+TAPER_BOT_RIGHT[0])/2,
+			(TAPER_BOT_LEFT[1]+TAPER_BOT_RIGHT[1])/2 + RF_PAD_taper_end
+		]
+		ret_cell.add(gdstk.Reference(PAD_cell, origin=PAD_origin))
+	# # label
+	# label_cell = new_label_cell(f"{PIN_length:.0f}", cell_name+"_label", layer=LAYER_MET)
+	# w, h = get_cell_size(label_cell)
+	# ret_cell.add(gdstk.Reference(label_cell, origin=(420-h/2, 40+PIN_length/2-w/2), rotation=np.pi/2))
+	return ret_cell, ret_o
+
+def new_PIN_AMZM_CPW_TERM_cell(PIN_length, cell_name, with_TERM=True, with_end_pad=False):
+	# for series termination resistor
+	thermal_isolation_length = 100
+	# connection points for use
+	MZM_BOTLEFT_CENTER = [0.0, +0.55]
+	MZM_BOTRIGHT_CENTER = [0.0, -0.55]
+	# constants
+	MMI2x2_BOTLEFT_CENTER  = [-0.55, 0.0]
+	MMI2x2_BOTRIGHT_CENTER = [+0.55, 0.0]
+	MMI2x2_TOPLEFT_CENTER  = [-0.55, 41.016]
+	MMI2x2_TOPRIGHT_CENTER = [+0.55, 41.016]
+	AMZM_total_delay_length = 100 # um, total optical path difference
+	AMZM_delayloop_length = AMZM_total_delay_length # delay on one side
+	AMZM_refloop_length = PIN_distance + np.abs(MMI2x2_BOTRIGHT_CENTER[0]-MMI2x2_BOTLEFT_CENTER[0]) # compensate additional delay of the other side
+	assert AMZM_delayloop_length > 0
+	routing_waveguide_pitch = 5
+	# PIN cell
+	PIN_cell, PIN_end_o = PIN_structure(PIN_length, [0,0], cell_name+"_PIN")
+	ret_cell = gdstk.Cell(cell_name)
+	# SiWG layer = 30
+	layer = LAYER_SiWG
+	## 2x2 MMI (bottom)
+	o = [0, 0]
+	ret_cell.add(gdstk.Reference(AIST_PDK["AIST_MMI_2x2"], origin=o, rotation=0)); o[1] += MMI2x2_TOPLEFT_CENTER[1]
+	MMI_top_point = o.copy()
+	## 2x2 MMI (bottom) left ports
+	o = [MMI2x2_BOTLEFT_CENTER[0], MMI_top_point[1]]
+	o = arc_UL(o, layer, ret_cell)
+	h = MMI_top_point[0] - PIN_distance/2 - o[0] + 1*(radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_LU(o, layer, ret_cell)
+	TAPER_BOT_LEFT = o.copy() # savepoint for taper (bottom left)
+	ret_cell.add(gdstk.Reference(PIN_cell, origin=o))
+	o[0] += PIN_end_o[0]
+	o[1] += PIN_end_o[1]
+	TAPER_TOP_LEFT = o.copy() # savepoint for taper (top left)
+	## 2x2 MMI (bottom) right ports
+	o = [MMI2x2_BOTRIGHT_CENTER[0], MMI_top_point[1]]
+	o = arc_UR(o, layer, ret_cell)
+	h = MMI_top_point[0] + PIN_distance/2 - o[0] - 1*(radius+dr)
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RU(o, layer, ret_cell)
+	TAPER_BOT_RIGHT = o.copy() # savepoint for taper (bottom right)
+	ret_cell.add(gdstk.Reference(PIN_cell, origin=o, rotation=np.pi, x_reflection=True))
+	o[0] += PIN_end_o[0]
+	o[1] += PIN_end_o[1]
+	TAPER_TOP_RIGHT = o.copy() # savepoint for taper (top right)
+	# connect to top MMI
+	## 2x2 MMI (top) left ports
+	o = TAPER_TOP_LEFT.copy()
+	o = arc_UR(o, layer, ret_cell)
+	h = 10 # arbitrary value
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	v = - AMZM_delayloop_length / 2
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	o = arc_RU(o, layer, ret_cell)
+	v = AMZM_delayloop_length / 2
+	o = vertical(o, v, layer, ret_cell)
+	v = routing_wg_pitch # to keep distance from U turn
+	o = vertical(o, v, layer, ret_cell)
+	v = np.abs(MMI2x2_BOTRIGHT_CENTER[0]-MMI2x2_BOTLEFT_CENTER[0])
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_UR(o, layer, ret_cell)
+	h = PIN_distance
+	o = horizontal(o, h, layer, ret_cell)
+	MMI_bot_point_left = o.copy() # savepoint for top MMI (left port)
+	## 2x2 MMI (top) right ports
+	o = TAPER_TOP_RIGHT.copy()
+	o = arc_UR(o, layer, ret_cell)
+	h = 10 # arbitrary value
+	o = horizontal(o, h, layer, ret_cell)
+	o = arc_RD(o, layer, ret_cell)
+	v = - AMZM_refloop_length / 2
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_DR(o, layer, ret_cell)
+	o = arc_RU(o, layer, ret_cell)
+	v = AMZM_refloop_length / 2
+	o = vertical(o, v, layer, ret_cell)
+	v = routing_wg_pitch # to keep distance from U turn
+	o = vertical(o, v, layer, ret_cell)
+	o = arc_UR(o, layer, ret_cell)
+	MMI_bot_point_right = o.copy() # savepoint for top MMI (right port)
+	## 2x2 MMI (top)
+	o = [
+		MMI_bot_point_right[0],
+		(MMI_bot_point_left[1] + MMI_bot_point_right[1]) / 2
+	]
+	ret_cell.add(gdstk.Reference(AIST_PDK["AIST_MMI_2x2"], origin=o, rotation=-np.pi/2)); o[0] += MMI2x2_TOPLEFT_CENTER[1]
+	ret_o = o.copy()
+	## CPW cell
+	SIG_GND_line_length = PIN_length + 1
+	if with_TERM:
 		PAD_cell, PAD_end_o = new_CPW_TERM_cell(SIG_GND_line_length, thermal_isolation_length, cell_name+"_PAD", with_end_pad=with_end_pad)
 		PAD_origin = [
 			(TAPER_BOT_LEFT[0]+TAPER_BOT_RIGHT[0])/2,
@@ -1481,17 +1594,18 @@ def PINL100TERM_02_route_cell(origin, end_o, ssc_point, layer, cell_name):
 	# bot left port
 	wg_offset += 1
 	o = [
-		origin[0] - MMI2x2_BOTLEFT_CENTER[0],
-		origin[1],
+		origin[0],
+		origin[1] - MMI2x2_BOTLEFT_CENTER[0],
 	]
-	o = arc_UR(o, layer, ret_cell)
-	h_1 = 15 # arbitrary value
+	o = arc_LU(o, layer, ret_cell)
+	o = arc_UL(o, layer, ret_cell)
+	h_1 = -50
 	o = horizontal(o, h_1, layer, ret_cell)
-	o = arc_RU(o, layer, ret_cell)
-	v = 40 # arbitrary value
+	o = arc_LU(o, layer, ret_cell)
+	v = PIN_distance / 2 + routing_wg_pitch*2 # arbitrary value
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_UR(o, layer, ret_cell)
-	h = end_o[1] - 4*(radius+dr) + routing_wg_pitch - h_1
+	h = end_o[1] + 1*(radius+dr) + routing_wg_pitch - h_1
 	o = horizontal(o, h, layer, ret_cell)
 	o = arc_RD(o, layer, ret_cell)
 	v = MZM_routing_height_max - o[1] + (-6+wg_offset)*routing_wg_pitch + 1*(radius+dr)
@@ -1779,15 +1893,11 @@ def GC1x4input_route_cell(origin, GC_pitch, layer, cell_name,
 	# PINL100TERM_02_origin
 	o = top_ends[2]
 	right_end = PINL100TERM_02_origin.copy()
-	right_end[0] -= np.abs(MMI2x2_BOTLEFT_CENTER[0])
-	v = - routing_wg_pitch
+	v = right_end[1] - o[1] + 1*(radius+dr) - MMI2x2_BOTRIGHT_CENTER[0]
 	o = vertical(o, v, layer, ret_cell)
 	o = arc_DR(o, layer, ret_cell)
-	h = right_end[0] - o[0] - 1*(radius+dr)
+	h = right_end[0] - o[0]
 	o = horizontal(o, h, layer, ret_cell)
-	o = arc_RD(o, layer, ret_cell)
-	v = right_end[1] - o[1]
-	o = vertical(o, v, layer, ret_cell)
 	# PINL200_01_origin
 	o = top_ends[1]
 	right_end = PINL200_01_origin.copy()
