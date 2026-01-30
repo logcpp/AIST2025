@@ -42,10 +42,18 @@ last change: 2026/01/30
 ## Experiments to do
 - PIN MZM measurement
 	- L=500,200: PIN resistance, DC bias switching, RF bandwidth
-	- L=100,200: PIN resistance, TIN resistance, DC bias switching, RF bandwidth
+	- L=200w/TERM,200w/oTERM: PIN resistance, TIN resistance, DC bias switching, RF bandwidth
 - GC 1x4 in -> GC 4x4 out (MVM)
 - GC 1x4 in -> GC 4x1 out (MVM)
 - GC 4x4 in -> SLM -> PD? (MVM)
 - RF SOLT calibration
 - RF Thru L/2L (L=1.0mm) de-embedding
-- TiN resistance measurement
+- passive test patterns
+	- 1x2 MMI
+	- 2x2 MMI
+	- GC-GC B2B (AIST, Ren)
+	- GC-wg-GC propagation loss (AIST)
+	- ssc-GC (AIST, Ren, Ren w/o NODMY)
+- active test patterns
+	- TiN resistance measurement
+	- PIN modulation loss 

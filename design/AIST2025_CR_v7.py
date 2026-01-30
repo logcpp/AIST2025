@@ -105,12 +105,12 @@ top_cell.add(gdstk.Reference(pin_mzm_L200, origin=PINL200_01_origin, rotation=np
 top_cell.add(gdstk.Reference(pin_mzm_L500, origin=PINL500_01_origin, rotation=np.pi/2))
 PINL100TERM_02_origin = [o[0]- 250 - 83.366, o[1] + 900 - 160.384 + 1]
 PINL200TERM_02_origin = [o[0]+ 110 + 1.2 + 23, o[1] + 906.232]
-pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_CPW_TERM_cell(200, "CR_PINL100AMZ_TERM")
-pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_CPW_cell(200, "CR_PINL200AMZ_TERM", with_TERM=False)
+pin_mzm_L100_TERM, pin_mzm_L100_TERM_end_o = lib.new_PIN_AMZM_CPW_TERM_cell(200, "CR_PINL200AMZ_CPW_TERM")
+pin_mzm_L200_TERM, pin_mzm_L200_TERM_end_o = lib.new_PIN_AMZM_CPW_cell(200, "CR_PINL200AMZ_CPW", with_TERM=False)
 top_cell.add(gdstk.Reference(pin_mzm_L100_TERM, origin=PINL100TERM_02_origin, rotation=-np.pi/2))
 top_cell.add(gdstk.Reference(pin_mzm_L200_TERM, origin=PINL200TERM_02_origin, rotation=-np.pi/2))
-PINL50GC_03_origin = [o[0] + 550 + 8.2, o[1] + 880.92]
-pin_mzm_L50_GC, pin_mzm_L50_GC_end_o = lib.new_PIN_AMZM_GC_cell(50, "CR_PINL50AMZ_GC")
+PINL50GC_03_origin = [o[0] + 600, o[1] + 800 - 59.384]
+pin_mzm_L50_GC, pin_mzm_L50_GC_end_o = lib.new_PIN_GC_cell(200, "CR_PINL50_GC")
 top_cell.add(gdstk.Reference(pin_mzm_L50_GC, origin=PINL50GC_03_origin, rotation=-np.pi/2))
 
 # #---------- right ssc region ----------#
@@ -162,12 +162,12 @@ PINL500_01_route = lib.PINL500_01_route_cell(PINL500_01_origin, pin_mzm_L500_end
 PINL200_01_route = lib.PINL200_01_route_cell(PINL200_01_origin, pin_mzm_L200_end_o, ssc_point, lib.LAYER_SiWG, "PINL200_01_route", right_end=PINL200TERM_02_origin)
 PINL100TERM_02_route = lib.PINL100TERM_02_route_cell(PINL100TERM_02_origin, pin_mzm_L100_TERM_end_o, ssc_point, lib.LAYER_SiWG, "PINL100TERM_02_route")
 PINL200TERM_02_route = lib.PINL200TERM_02_route_cell(PINL200TERM_02_origin, pin_mzm_L200_TERM_end_o, ssc_point, lib.LAYER_SiWG, "PINL200TERM_02_route")
-PINL50GC_03_route = lib.PINL50GC_03_route_cell(PINL50GC_03_origin, pin_mzm_L50_GC_end_o, lib.LAYER_SiWG, "PINL50GC_03_route")
+# PINL50GC_03_route = lib.PINL50GC_03_route_cell(PINL50GC_03_origin, pin_mzm_L50_GC_end_o, lib.LAYER_SiWG, "PINL50GC_03_route")
 top_cell.add(gdstk.Reference(PINL500_01_route, origin=(0,0)))
 top_cell.add(gdstk.Reference(PINL200_01_route, origin=(0,0)))
 top_cell.add(gdstk.Reference(PINL100TERM_02_route, origin=(0,0)))
 top_cell.add(gdstk.Reference(PINL200TERM_02_route, origin=(0,0)))
-top_cell.add(gdstk.Reference(PINL50GC_03_route, origin=(0,0)))
+# top_cell.add(gdstk.Reference(PINL50GC_03_route, origin=(0,0)))
 
 #---------- GC array routing ----------#
 # GC 4x4 array
@@ -218,6 +218,11 @@ top_cell.add(gdstk.Reference(Thru_01, origin=Thru_01_origin, rotation=np.pi/2))
 passive_origin = [CHIP_WIDTH, JIANG_HEIGHT+200]
 passive_cell = lib.passive_test_patterns(passive_origin, ssc_right, loop_right, GC_T20P0_6A35L10, "Passive_test_pattern")
 top_cell.add(gdstk.Reference(passive_cell))
+
+#---------- TIN resistor test pattern ----------#
+TIN_resistors_origin = [3800, 4400]
+TIN_resistors_cell = lib.TIN_test_patterns("TIN_test_pattern")
+top_cell.add(gdstk.Reference(TIN_resistors_cell, origin=TIN_resistors_origin))
 
 lib.LIB.add(top_cell, *top_cell.dependencies(True))
 lib.LIB.write_gds("AIST2025_CR_v7.gds")
