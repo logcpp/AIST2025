@@ -1,25 +1,22 @@
 # AIST 2025 GDS design
 created on: 2026/01/10
-last change: 2026/01/30
+last change: 2026/01/31
 
 ## Checkpoints
 - FlexPath(..., tolerance=1e-3)
-- make vertical(), arc_\*() to add to ret_cell by default
-- check PIN injection-type P+ and N+ pad orientation
-
+- make vertical(), arc_\*() to add to ret_cell by default -> OK (2026/01/31)
+- check PIN injection-type P+ and N+ pad orientation -> OK, symmetric in MZM (2026/01/31)
 - check PIN MZM pad configuration and RC constants -> for higher modulation speed
 - check 4x4 GC array optimized pitch for:
-	- 4 inputs -> 4x4 outputs
-	- 4x4 inputs -> 4x4 PD arrays (potential)
-
-- place no dummy at SSC area with large MFD
-- dicing line 35~50 um width, including polishing length
-- remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space
-- NODMY area for GC and micromanipulator markers
-- make sure metal pattern are not easily shorted due to Si WG below
-- check equivalent CPW impedance of RF pads
+	- 4 inputs -> 4x4 outputs -> OK (2026/01/31)
+	- 4x4 inputs -> 4x4 PD arrays (potential) -> splitting OK (2026/01/31)
+- place no dummy at SSC area with large MFD -> OK (2026/01/31)
+- dicing line 35~50 um width, including polishing length -> OK (2026/01/31)
+- remove GC array markers (for Micro-manipulator) of the right column and add to other remaining space -> OK (2026/01/31)
+- NODMY area for GC and micromanipulator markers -> added for GC, no need for mani markers (2026/01/31)
+- make sure metal pattern are not easily shorted due to Si WG below -> OK (2026/01/31)
 - check all resistance are estimated correctly
-- check CPW impedance is estimated correctly
+- check CPW impedance is estimated correctly -> OK, 50~51 Ohm (2026/01/31)
 
 ## Test patterns
 - 50 Ohm load
