@@ -12,11 +12,11 @@ CHIP_WIDTH = 5000
 CHIP_HEIGHT = 10000
 
 AIST_MPW_LIB = gdstk.read_gds("../MPW_Cell/MPW_Cell_5x10.gds")
-JIANG_LIB = gdstk.read_gds("../others_GDS/Jiang_20260128.gds")
-SHERRY_LIB_1 = gdstk.read_gds("../others_GDS/Sherry_20260130_1.gds")
-SHERRY_LIB_2 = gdstk.read_gds("../others_GDS/Sherry_20260130_2.gds")
-SUGANUMA_LIB = gdstk.read_gds("../others_GDS/20260130_SUGANUMA_main.gds")
-REN_LIB = gdstk.read_gds("../design/AIST2025_CR_v7.gds")
+JIANG_LIB = gdstk.read_gds("../others_GDS/Jiang_20260131_2.gds")
+SHERRY_LIB_1 = gdstk.read_gds("../others_GDS/Sherry_20260131_2.gds")
+SHERRY_LIB_2 = gdstk.read_gds("../others_GDS/Sherry_20260131_1.gds")
+SUGANUMA_LIB = gdstk.read_gds("../others_GDS/20260130_SUGANUMA_main-3.gds")
+REN_LIB = gdstk.read_gds("../design/AIST2025_CR_v8.gds")
 
 AIST_MPW_LIB.rename_cell("MPW_cell", "BASE")
 JIANG_LIB.rename_cell("Top_Final_All_Loops", "Jiang")
@@ -94,8 +94,8 @@ for ext_lib in [AIST_MPW_LIB, JIANG_LIB, SHERRY_LIB_1, SHERRY_LIB_2, SUGANUMA_LI
 top_cell.add(
 	gdstk.Reference(AIST_MPW_LIB["BASE"], origin=(2500,5000)),
 	gdstk.Reference(JIANG_LIB["Jiang"], origin=(450,800)),
-	gdstk.Reference(SHERRY_LIB_1["Sherry_1"], origin=(2380, 300+3500), rotation=np.pi/2),
-	gdstk.Reference(SHERRY_LIB_2["Sherry_2"], origin=(3350, 300+3500), rotation=np.pi/2),
+	gdstk.Reference(SHERRY_LIB_1["Sherry_1"], origin=(2370, 340+3500), rotation=np.pi/2),
+	gdstk.Reference(SHERRY_LIB_2["Sherry_2"], origin=(3360, 340+3500), rotation=np.pi/2),
 	gdstk.Reference(SUGANUMA_LIB["Suganuma"], origin=(CHIP_WIDTH/2, CHIP_HEIGHT-5000)),
 	gdstk.Reference(REN_LIB["Ren"], origin=(0, 0)),
 )
