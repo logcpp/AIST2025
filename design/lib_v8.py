@@ -234,7 +234,8 @@ def new_GC_cell(grating_num, grating_pitch, angle_deg, taper_length, cell_name):
 	grating_duty = 0.5
 	angle_rad = angle_deg / 180 * np.pi
 	taper_start = wg_width/2 / np.tan(angle_rad/2)
-	radius = taper_start + taper_length + grating_pitch * grating_num
+	taper_end = 0.55 - grating_pitch*(1-grating_duty) # design rule, end slab width should be >0.5 um
+	radius = taper_start + taper_length + grating_pitch * grating_num + taper_end
 	# curve
 	curve = gdstk.Curve((0,0), tolerance=1e-3)
 	curve.segment((radius,0), True)
